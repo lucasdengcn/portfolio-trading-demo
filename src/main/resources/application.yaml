@@ -1,0 +1,25 @@
+spring.application:
+  name: portfolio-trading
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    com.example.demo: DEBUG
+    org:
+      springframework:
+        cloud:
+          context: INFO
+
+spring:
+  #
+  datasource:
+    url: jdbc:h2:mem:portfolio.db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_RECONNECT=TRUE;MODE=PostgreSQL;
+    username: sa
+    password: potfolio-trading-demo
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+
+
