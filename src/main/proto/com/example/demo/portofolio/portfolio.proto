@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package demo;
+
+option java_multiple_files = true;
+option java_package = "com.example.demo.portfolio.model";
+option java_outer_classname = "PortfolioProto";
+
+message Position {
+    int32 positionId = 1;
+    string symbol = 2;
+    double price = 3;
+    int32 qty = 4;
+    double nav = 5;
+}
+
