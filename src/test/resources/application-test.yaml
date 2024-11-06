@@ -1,0 +1,5 @@
+market:
+  quote-producer-thread.enabled: false
+  broker-dispatch-thread:
+    enabled: false
+    timeout: 1

@@ -1,11 +1,7 @@
 package com.example.demo;
 
-import com.example.demo.market.QuoteBroker;
-import com.example.demo.market.QuoteProducer;
 import com.example.demo.market.StockPool;
-import com.example.demo.portfolio.consumer.CallOptionConsumerImpl;
 import com.example.demo.portfolio.consumer.OptionPool;
-import com.example.demo.portfolio.consumer.PutOptionConsumerImpl;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.entity.ProductType;
 import com.example.demo.portfolio.service.PositionService;
@@ -27,12 +23,6 @@ public class DemoApplication implements CommandLineRunner {
 	}
 
 	@Autowired
-	private QuoteProducer quoteProducer;
-
-	@Autowired
-	private QuoteBroker quoteBroker;
-
-	@Autowired
 	private StockPool stockPool;
 
 	@Autowired
@@ -47,21 +37,11 @@ public class DemoApplication implements CommandLineRunner {
 	@Autowired @Qualifier("putOptionPool")
 	OptionPool putOptionPool;
 
-	@Autowired
-	CallOptionConsumerImpl callOptionConsumer;
-
-	@Autowired
-	PutOptionConsumerImpl putOptionConsumer;
-
 	@Override
 	public void run(String... args) throws Exception {
 		//
 		loadPositionData();
-		//
-		quoteBroker.subscribe(callOptionConsumer);
-		quoteBroker.subscribe(putOptionConsumer);
-		//
-		quoteProducer.start();
+
 	}
 
 	public void loadPositionData() throws IOException {

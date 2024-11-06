@@ -4,6 +4,8 @@ import com.example.demo.market.model.Quote;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.repository.PositionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class PositionService {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private PositionRepository positionRepository;
@@ -42,20 +46,25 @@ public class PositionService {
      *
      * @param quote
      */
-    public void updateOnPriceChange(Quote quote){
+    public int updateOnPriceChange(Quote quote){
         String symbol = quote.getSymbol();
         double price = quote.getPrice();
         //
-        updateNavOnSymbol(symbol, price);
+        return updateNavOnSymbol(symbol, price);
     }
 
-    private void updateNavOnSymbol(String symbol, double price) {
+    private int updateNavOnSymbol(String symbol, double price) {
         Position position = holdings.get(symbol);
+        if (null == position){
+            return 0;
+        }
         Position build = position.toBuilder()
                 .setPrice(price)
                 .setNav(price * position.getQty())
                 .build();
         holdings.put(symbol, build);
+        logger.debug("update position nav. {}", build);
+        return 1;
     }
 
     public Position findBySymbol(String symbol){

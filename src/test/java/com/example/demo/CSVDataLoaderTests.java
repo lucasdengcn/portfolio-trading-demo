@@ -75,7 +75,7 @@ class CSVDataLoaderTests {
     void load_csv_file_save() throws IOException {
         Assertions.assertEquals(2, stockPool.countOfStock());
         //
-        Set<String> stocks = stockPool.getStocks();
+        List<String> stocks = stockPool.getStocks();
         Assertions.assertTrue(stocks.contains("AAPL"));
         Assertions.assertTrue(stocks.contains("TELSA"));
         //
