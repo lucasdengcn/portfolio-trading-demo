@@ -43,12 +43,19 @@ public class PositionService {
      * @param quote
      */
     public void updateOnPriceChange(Quote quote){
-        Position position = holdings.get(quote.getSymbol());
+        String symbol = quote.getSymbol();
+        double price = quote.getPrice();
+        //
+        updateNavOnSymbol(symbol, price);
+    }
+
+    private void updateNavOnSymbol(String symbol, double price) {
+        Position position = holdings.get(symbol);
         Position build = position.toBuilder()
-                .setPrice(quote.getPrice())
-                .setNav(quote.getPrice() * position.getQty())
+                .setPrice(price)
+                .setNav(price * position.getQty())
                 .build();
-        holdings.put(quote.getSymbol(), build);
+        holdings.put(symbol, build);
     }
 
     public Position findBySymbol(String symbol){

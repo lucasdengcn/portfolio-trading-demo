@@ -59,7 +59,7 @@ class PositionServiceTests {
         Position position = positionService.findBySymbol("A-100-P");
         Assertions.assertEquals(-1, position.getQty());
         Assertions.assertEquals(-100.0f, position.getNav());
-        Assertions.assertEquals(-100.0f, position.getPrice());
+        Assertions.assertEquals(100.0f, position.getPrice());
     }
 
     @Test

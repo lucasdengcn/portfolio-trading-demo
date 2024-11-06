@@ -1,5 +1,7 @@
 package com.example.demo.market.model;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,17 @@ public class QuoteTests {
 
         Assertions.assertEquals(1.2f, quote.getPrice());
         Assertions.assertEquals("A", quote.getSymbol());
+        //
+        ByteString byteString = quote.toByteString();
+        System.out.println(byteString);
+        //
+        try {
+            Quote parseFrom = Quote.parseFrom(byteString);
+            System.out.println(parseFrom);
+        } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }

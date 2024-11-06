@@ -1,22 +1,19 @@
 package com.example.demo;
 
-import com.example.demo.market.ListedStock;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.entity.ProductType;
-import com.example.demo.portfolio.service.PositionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Component
@@ -27,15 +24,7 @@ public class CSVDataLoader {
     @Value("${app.csv-relative-path}")
     private String csvFilePath;
 
-    @Autowired
-    private final ListedStock listedStock;
-
-    @Autowired
-    private final PositionService positionService;
-
-    public CSVDataLoader(ListedStock listedStock, PositionService positionService) {
-        this.listedStock = listedStock;
-        this.positionService = positionService;
+    public CSVDataLoader() {
     }
 
     public String getCsvFilePath() {
@@ -52,36 +41,38 @@ public class CSVDataLoader {
         return Paths.get(path);
     }
 
-    public void load() throws IOException {
+    public void load(Consumer<List<PositionEntity>> entityConsumer) throws IOException {
         Path csvFile = getCsvFile();
         logger.debug("csv file: {}", csvFile.toAbsolutePath());
         List<PositionEntity> entityList = new ArrayList<>();
         try (Stream<String> stream = Files.lines(csvFile)) {
             stream.forEach(s -> {
                 if (s.startsWith("symbol")){
+                    // the head row
                     return;
                 }
+                // for demo
                 String[] temp = s.split(",");
-                ProductType productType = null;
+                PositionEntity entity = new PositionEntity(temp[0], Integer.parseInt(temp[1]));
+                //
                 if (temp[0].endsWith("-C")){
-                    productType = ProductType.CALL;
+                    entity.setRelStockSymbol(temp[0].split("-")[0]);
+                    entity.setType(ProductType.CALL);
                 } else if (temp[0].endsWith("-P")){
-                    productType = ProductType.PUT;
+                    entity.setRelStockSymbol(temp[0].split("-")[0]);
+                    entity.setType(ProductType.PUT);
                 } else {
-                    productType = ProductType.STOCK;
+                    entity.setType(ProductType.STOCK);
                 }
                 //
-                entityList.add(new PositionEntity(temp[0], Integer.parseInt(temp[1]), productType));
-                if (productType == ProductType.STOCK){
-                    listedStock.registerSymbol(temp[0]);
-                }
+                entityList.add(entity);
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        logger.debug("load stocks in total: {}, positions in total: {}", listedStock.count(), entityList.size());
+        logger.debug("load positions in total: {}", entityList.size());
         //
-        positionService.save(entityList);
+        entityConsumer.accept(entityList);
     }
 
 }
