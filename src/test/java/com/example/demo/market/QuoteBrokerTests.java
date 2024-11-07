@@ -49,4 +49,14 @@ class QuoteBrokerTests {
         int result = broker.dispatchMessage();
         Assertions.assertEquals(1, result);
     }
+
+    @Test
+    void test_publish_null_message() {
+        broker.publish(null);
+    }
+
+    @Test
+    void test_publish_empty_message() {
+        broker.publish(QuoteBatch.newBuilder().build());
+    }
 }

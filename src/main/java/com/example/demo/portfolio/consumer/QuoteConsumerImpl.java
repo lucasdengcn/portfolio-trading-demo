@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,7 +36,7 @@ public class QuoteConsumerImpl extends AbstractQuoteConsumerImpl {
     }
 
     @Override
-    public void handle(ByteString byteString) throws Exception {
+    public void handle(@NonNull ByteString byteString) throws Exception {
         //
         try {
             QuoteBatch stockQuotes = QuoteBatch.parseFrom(byteString);

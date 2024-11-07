@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,7 +30,7 @@ public class ConsoleDashboard {
     }
 
     @EventListener
-    public synchronized void updateOnStockPriceChange(QuoteBatch quoteBatch) {
+    public synchronized void updateOnStockPriceChange(@NonNull QuoteBatch quoteBatch) {
         logger.debug("receive updates: {}", quoteBatch);
         //
         int seq = counting.incrementAndGet();

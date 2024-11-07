@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -86,8 +87,8 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      * @param pocket
      * @param time
      */
-    public void generatePublishPrice(Set<String> pocket, int time) {
-        if (!pocket.isEmpty()) {
+    public void generatePublishPrice(@NonNull Set<String> pocket, int time) {
+        if (null != pocket && !pocket.isEmpty()) {
             try {
                 for (String symbol : pocket) {
                     // generate price
@@ -138,7 +139,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      * @param symbol
      * @param price
      */
-    public void publishNewPrice(String symbol, double price) {
+    public void publishNewPrice(@NonNull String symbol, double price) {
         try {
             wrapNewPrice(price, symbol);
             broker.publish(quoteBatchBuilder.build());

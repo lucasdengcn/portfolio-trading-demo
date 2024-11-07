@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,7 +52,7 @@ public class PositionService {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    public void save(List<PositionEntity> entityList) {
+    public void save(@NonNull List<PositionEntity> entityList) {
         //
         Iterable<PositionEntity> positionEntities = positionRepository.saveAll(entityList);
         //
@@ -90,7 +91,7 @@ public class PositionService {
     /**
      * @param stockQuote
      */
-    public void updateOnPriceChange(Quote stockQuote) {
+    public void updateOnPriceChange(@NonNull Quote stockQuote) {
         String symbol = stockQuote.getSymbol();
         double price = stockQuote.getPrice();
         //
@@ -118,7 +119,7 @@ public class PositionService {
                 .collect(Collectors.toList());
     }
 
-    public double getSumOfNav(Collection<Position> positions) {
+    public double getSumOfNav(@NonNull Collection<Position> positions) {
         return positions.stream().map(Position::getNav).reduce(0.0d, Double::sum);
     }
 
@@ -129,7 +130,7 @@ public class PositionService {
      * @param position
      * @return
      */
-    public Position updateOptionNav(Quote quote, Position position) {
+    public Position updateOptionNav(@NonNull Quote quote, @NonNull Position position) {
         OptionPricing optionPricing = optionManager.getPricing(position.getSymbolType());
         if (null == optionPricing) {
             logger.info("Option Pricing NOT FOUND. {}", position.getSymbolType());
@@ -148,7 +149,7 @@ public class PositionService {
      * @param price
      * @return
      */
-    private Position updateNavOnSymbol(Position position, double price) {
+    private Position updateNavOnSymbol(@NonNull Position position, double price) {
         //
         BigDecimal v1 = BigDecimal.valueOf(price).setScale(2, RoundingMode.DOWN);
         BigDecimal v2 = BigDecimal.valueOf(position.getQty());

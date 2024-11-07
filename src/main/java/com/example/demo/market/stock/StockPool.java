@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,23 +20,23 @@ public class StockPool {
     private final Map<String, Stock> stockPrice = Maps.newConcurrentMap();
     private final Random random = new Random();
     //
-    public void register(String symbol) {
+    public void register(@NonNull String symbol) {
         if (this.stocksSymbols.contains(symbol)) return;
         this.stocksSymbols.add(symbol);
     }
 
-    public void registerPrice(Stock stock) {
+    public void registerPrice(@NonNull Stock stock) {
         stockPrice.put(stock.getSymbol(), stock);
         register(stock.getSymbol());
     }
 
-    public void updatePrice(String symbol, double price) {
+    public void updatePrice(@NonNull String symbol, double price) {
         Stock stock = stockPrice.get(symbol);
         Stock build = stock.toBuilder().setPrice(price).build();
         stockPrice.put(symbol, build);
     }
 
-    public Stock getLatestPrice(String symbol) {
+    public Stock getLatestPrice(@NonNull String symbol) {
         return stockPrice.get(symbol);
     }
 
@@ -47,7 +48,7 @@ public class StockPool {
         return stocksSymbols.size();
     }
 
-    public boolean contains(String symbol) {
+    public boolean contains(@NonNull String symbol) {
         return stocksSymbols.contains(symbol);
     }
 

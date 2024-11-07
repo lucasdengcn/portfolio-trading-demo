@@ -3,8 +3,9 @@
 package com.example.demo.market.producer;
 
 import com.google.protobuf.ByteString;
+import org.springframework.lang.NonNull;
 
 public interface QuoteConsumer {
 
-    void onEvent(ByteString byteString);
+    void onEvent(@NonNull ByteString byteString);
 }

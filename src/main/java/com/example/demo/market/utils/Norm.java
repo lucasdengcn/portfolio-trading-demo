@@ -1,6 +1,6 @@
 /* (C) 2024 */ 
 
-package com.example.demo.market.option.pricing;
+package com.example.demo.market.utils;
 
 /**
  * https://en.wikipedia.org/wiki/Cumulative_distribution_function

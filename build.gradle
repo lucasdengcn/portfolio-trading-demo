@@ -40,6 +40,10 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+tasks.named('build') {
+	dependsOn spotlessApply
+}
+
 protobuf {
 	protoc {
 		// Download from repositories

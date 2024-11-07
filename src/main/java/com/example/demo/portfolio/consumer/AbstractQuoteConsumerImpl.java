@@ -8,15 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.lang.NonNull;
 
 public abstract class AbstractQuoteConsumerImpl implements QuoteConsumer, InitializingBean, DisposableBean {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public abstract void handle(ByteString byteString) throws Exception;
+    public abstract void handle(@NonNull ByteString byteString) throws Exception;
 
     @Override
-    public void onEvent(ByteString byteString) {
+    public void onEvent(@NonNull ByteString byteString) {
         try {
             handle(byteString);
         } catch (Exception e) {

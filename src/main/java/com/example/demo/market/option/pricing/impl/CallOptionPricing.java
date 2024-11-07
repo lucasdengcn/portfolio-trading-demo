@@ -1,10 +1,13 @@
 /* (C) 2024 */ 
 
-package com.example.demo.market.option.pricing;
+package com.example.demo.market.option.pricing.impl;
 
 import com.example.demo.market.model.Option;
 import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.Stock;
+import com.example.demo.market.option.pricing.OptionPricing;
+import com.example.demo.market.utils.Norm;
+import org.springframework.lang.NonNull;
 
 public class CallOptionPricing implements OptionPricing {
 
@@ -15,7 +18,7 @@ public class CallOptionPricing implements OptionPricing {
     }
 
     @Override
-    public double price(Stock stock, Quote stockQuote, Option option) {
+    public double price(@NonNull Stock stock, @NonNull Quote stockQuote, @NonNull Option option) {
         //
         double stockPrice = stockQuote.getPrice();
         double strikePrice = option.getStrikePrice();

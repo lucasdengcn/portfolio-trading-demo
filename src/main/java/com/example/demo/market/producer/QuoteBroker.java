@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,7 +37,7 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
     @Value("${market.broker-dispatch-thread.timeout:10}")
     private int waitTimeout;
 
-    public void start() {
+    private void start() {
         running = true;
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -88,7 +89,8 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
      * put message in a queue, and then will notify consumer immediately
      * @param quoteBatch
      */
-    public void publish(QuoteBatch quoteBatch) {
+    public void publish(@NonNull QuoteBatch quoteBatch) {
+        if (null == quoteBatch) return;
         if (quoteBatch.getItemsList().isEmpty()) {
             return;
         }
@@ -99,7 +101,7 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
      * registration done on startup
      * @param consumer
      */
-    public void add(QuoteConsumer consumer) {
+    public void add(@NonNull QuoteConsumer consumer) {
         consumerList.add(consumer);
     }
 
