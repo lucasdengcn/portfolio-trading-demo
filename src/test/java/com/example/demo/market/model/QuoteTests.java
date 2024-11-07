@@ -1,3 +1,5 @@
+/* (C) 2024 */ 
+
 package com.example.demo.market.model;
 
 import com.google.protobuf.ByteString;
@@ -12,9 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 public class QuoteTests {
 
     @Test
-    void test_create_quote(){
-        Quote quote = Quote.newBuilder().setSymbol("A").setPrice(1.2f)
-                .build();
+    void test_create_quote() {
+        Quote quote = Quote.newBuilder().setSymbol("A").setPrice(1.2f).build();
 
         Assertions.assertEquals(1.2f, quote.getPrice());
         Assertions.assertEquals("A", quote.getSymbol());
@@ -28,7 +29,5 @@ public class QuoteTests {
         } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException(e);
         }
-
     }
-
 }

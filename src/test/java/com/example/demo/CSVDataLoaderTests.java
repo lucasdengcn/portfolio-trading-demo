@@ -1,12 +1,15 @@
+/* (C) 2024 */ 
+
 package com.example.demo;
 
-import com.example.demo.market.QuoteBroker;
-import com.example.demo.market.StockPool;
+import com.example.demo.market.producer.StockPool;
 import com.example.demo.portfolio.consumer.OptionPool;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.entity.ProductType;
-import com.example.demo.portfolio.repository.PositionRepository;
-import com.example.demo.portfolio.service.PositionService;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,13 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
 @SpringBootTest
 @ActiveProfiles("test")
 class CSVDataLoaderTests {
@@ -29,19 +25,17 @@ class CSVDataLoaderTests {
     @Autowired
     private CSVDataLoader csvDataLoader;
 
-    @Autowired @Qualifier("callOptionPool")
-    OptionPool callOptionPool;
+    @Autowired
+    @Qualifier("callOptionPool") OptionPool callOptionPool;
 
-    @Autowired @Qualifier("putOptionPool")
-    OptionPool putOptionPool;
+    @Autowired
+    @Qualifier("putOptionPool") OptionPool putOptionPool;
 
     @Autowired
     private StockPool stockPool;
 
     @BeforeEach
-    void setup (){
-
-    }
+    void setup() {}
 
     @Test
     void check_csv_file() throws IOException {
@@ -59,13 +53,19 @@ class CSVDataLoaderTests {
                 //
                 Assertions.assertEquals(6, positionEntities.size());
                 //
-                long count = positionEntities.stream().filter(positionEntity -> positionEntity.getType().equals(ProductType.STOCK)).count();
+                long count = positionEntities.stream()
+                        .filter(positionEntity -> positionEntity.getType().equals(ProductType.STOCK))
+                        .count();
                 Assertions.assertEquals(2, count);
                 //
-                count = positionEntities.stream().filter(positionEntity -> positionEntity.getType().equals(ProductType.PUT)).count();
+                count = positionEntities.stream()
+                        .filter(positionEntity -> positionEntity.getType().equals(ProductType.PUT))
+                        .count();
                 Assertions.assertEquals(2, count);
                 //
-                count = positionEntities.stream().filter(positionEntity -> positionEntity.getType().equals(ProductType.CALL)).count();
+                count = positionEntities.stream()
+                        .filter(positionEntity -> positionEntity.getType().equals(ProductType.CALL))
+                        .count();
                 Assertions.assertEquals(2, count);
             }
         });

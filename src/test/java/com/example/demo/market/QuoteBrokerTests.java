@@ -1,14 +1,15 @@
+/* (C) 2024 */ 
+
 package com.example.demo.market;
 
 import com.example.demo.market.model.Quote;
+import com.example.demo.market.producer.QuoteBroker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -18,7 +19,7 @@ class QuoteBrokerTests {
     QuoteBroker broker;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         broker.clear();
     }
 
@@ -47,5 +48,4 @@ class QuoteBrokerTests {
         int result = broker.dispatchMessage();
         Assertions.assertEquals(1, result);
     }
-
 }

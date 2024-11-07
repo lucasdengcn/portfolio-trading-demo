@@ -1,10 +1,10 @@
-package com.example.demo.market;
+/* (C) 2024 */ 
 
-import com.example.demo.market.model.Quote;
+package com.example.demo.market.producer;
+
 import com.google.protobuf.ByteString;
 
 public interface QuoteConsumer {
 
     void onEvent(ByteString quote);
-
 }

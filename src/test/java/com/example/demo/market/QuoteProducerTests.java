@@ -1,5 +1,9 @@
+/* (C) 2024 */ 
+
 package com.example.demo.market;
 
+import com.example.demo.market.producer.QuoteBroker;
+import com.example.demo.market.producer.QuoteProducer;
 import com.google.protobuf.ByteString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,16 +21,15 @@ class QuoteProducerTests {
     @Autowired
     QuoteBroker quoteBroker;
 
-
     @Test
-    void test_on_publish_new_price(){
+    void test_on_publish_new_price() {
         quoteProducer.publishNewPrice(1.0f, "A");
         ByteString byteString = quoteBroker.peek();
         Assertions.assertNotNull(byteString);
     }
 
     @Test
-    void test_on_publish_new_price_and_consume(){
+    void test_on_publish_new_price_and_consume() {
         quoteProducer.publishNewPrice(1.0f, "A");
         ByteString byteString = quoteBroker.peek();
         Assertions.assertNotNull(byteString);
@@ -37,5 +40,4 @@ class QuoteProducerTests {
         //
         Assertions.assertNull(byteString);
     }
-
 }

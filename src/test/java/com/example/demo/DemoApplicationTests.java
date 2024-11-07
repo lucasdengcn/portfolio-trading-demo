@@ -1,3 +1,5 @@
+/* (C) 2024 */ 
+
 package com.example.demo;
 
 import org.junit.jupiter.api.Test;
@@ -8,8 +10,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class DemoApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void contextLoads() {}
 }

@@ -1,21 +1,22 @@
+/* (C) 2024 */ 
+
 package com.example.demo.portfolio.service;
 
 import com.example.demo.market.model.Quote;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.repository.PositionRepository;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 @Service
 public class PositionService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private PositionRepository positionRepository;
@@ -26,18 +27,18 @@ public class PositionService {
         //
         Iterable<PositionEntity> positionEntities = positionRepository.saveAll(entityList);
         //
-        positionEntities.forEach(item -> holdings.put(item.getSymbol(),
+        positionEntities.forEach(item -> holdings.put(
+                item.getSymbol(),
                 Position.newBuilder()
-                    .setPositionId(item.getId())
+                        .setPositionId(item.getId())
                         .setSymbol(item.getSymbol())
                         .setQty(item.getPositionSize())
                         .setNav(0.0f)
                         .setPrice(0.0f)
-                        .build()
-        ));
+                        .build()));
     }
 
-    public void deleteAll(){
+    public void deleteAll() {
         positionRepository.deleteAll();
         holdings.clear();
     }
@@ -46,7 +47,7 @@ public class PositionService {
      *
      * @param quote
      */
-    public int updateOnPriceChange(Quote quote){
+    public int updateOnPriceChange(Quote quote) {
         String symbol = quote.getSymbol();
         double price = quote.getPrice();
         //
@@ -55,7 +56,7 @@ public class PositionService {
 
     private int updateNavOnSymbol(String symbol, double price) {
         Position position = holdings.get(symbol);
-        if (null == position){
+        if (null == position) {
             return 0;
         }
         Position build = position.toBuilder()
@@ -67,12 +68,11 @@ public class PositionService {
         return 1;
     }
 
-    public Position findBySymbol(String symbol){
+    public Position findBySymbol(String symbol) {
         return holdings.get(symbol);
     }
 
-    public Integer count(){
+    public Integer count() {
         return holdings.size();
     }
-
 }

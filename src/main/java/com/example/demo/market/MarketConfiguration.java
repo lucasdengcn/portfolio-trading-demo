@@ -1,3 +1,5 @@
+/* (C) 2024 */ 
+
 package com.example.demo.market;
 
 import com.example.demo.market.pricing.RandomPricing;
@@ -9,8 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class MarketConfiguration {
 
     @Bean
-    public StockPricing randomPricing(){
+    public StockPricing randomPricing() {
         return new RandomPricing();
     }
-
 }

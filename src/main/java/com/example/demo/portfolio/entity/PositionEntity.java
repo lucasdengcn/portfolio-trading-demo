@@ -1,10 +1,10 @@
+/* (C) 2024 */ 
+
 package com.example.demo.portfolio.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-
-import java.math.BigDecimal;
 
 @Table("POSITIONS")
 public class PositionEntity {
@@ -22,8 +22,7 @@ public class PositionEntity {
     @Column("REL_STOCK_SYMBOL")
     private String relStockSymbol;
 
-    public PositionEntity() {
-    }
+    public PositionEntity() {}
 
     public PositionEntity(String symbol, Integer positionSize) {
         this.symbol = symbol;

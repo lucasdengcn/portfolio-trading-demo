@@ -1,4 +1,8 @@
+/* (C) 2024 */ 
+
 package com.example.demo.portfolio.service;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.demo.market.model.Quote;
 import com.example.demo.portfolio.entity.PositionEntity;
@@ -12,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @ActiveProfiles("test")
 class PositionServiceTests {
@@ -22,7 +24,7 @@ class PositionServiceTests {
     private PositionService positionService;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         positionService.deleteAll();
     }
 

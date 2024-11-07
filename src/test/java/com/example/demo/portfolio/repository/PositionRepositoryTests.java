@@ -1,19 +1,20 @@
+/* (C) 2024 */ 
+
 package com.example.demo.portfolio.repository;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.entity.ProductType;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -23,12 +24,12 @@ class PositionRepositoryTests {
     private PositionRepository positionRepository;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         positionRepository.deleteAll();
     }
 
     @Test
-    void test_on_create_position(){
+    void test_on_create_position() {
         PositionEntity positionEntity = new PositionEntity();
         positionEntity.setSymbol("A1");
         positionEntity.setPositionSize(10);
@@ -43,7 +44,7 @@ class PositionRepositoryTests {
     }
 
     @Test
-    void test_on_count_of_type_after_create(){
+    void test_on_count_of_type_after_create() {
         PositionEntity positionEntity = new PositionEntity();
         positionEntity.setSymbol("A2");
         positionEntity.setPositionSize(10);
@@ -58,21 +59,21 @@ class PositionRepositoryTests {
     }
 
     @Test
-    void test_on_count_of_type_empty(){
+    void test_on_count_of_type_empty() {
         //
         int count = positionRepository.countByType(ProductType.STOCK);
         Assertions.assertEquals(0, count);
     }
 
     @Test
-    void test_find_by_symbol_empty(){
+    void test_find_by_symbol_empty() {
         //
         Optional<PositionEntity> optionalPosition = positionRepository.findBySymbol("FAKE");
         Assertions.assertFalse(optionalPosition.isPresent());
     }
 
     @Test
-    void test_find_by_type_stock_records(){
+    void test_find_by_type_stock_records() {
         PositionEntity positionEntity = new PositionEntity();
         positionEntity.setSymbol("A");
         positionEntity.setPositionSize(10);
@@ -95,5 +96,4 @@ class PositionRepositoryTests {
             }
         });
     }
-
 }

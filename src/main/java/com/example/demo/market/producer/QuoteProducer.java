@@ -1,18 +1,19 @@
-package com.example.demo.market;
+/* (C) 2024 */ 
+
+package com.example.demo.market.producer;
 
 import com.example.demo.market.model.Quote;
 import com.example.demo.market.pricing.StockPricing;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.IntStream;
 
 @Component
 public class QuoteProducer implements InitializingBean, DisposableBean {
@@ -23,6 +24,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      * simulate event-driven broker
      */
     private final QuoteBroker broker;
+
     private final StockPool symbolPool;
     private final StockPricing stockPricing;
     private volatile boolean running = false;
@@ -42,20 +44,21 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         this.symbolPool = symbolPool;
         this.stockPricing = stockPricing;
         // init object pool
-        IntStream.range(1, 1000).forEach(value -> quotePool.add(Quote.newBuilder().build()));
+        IntStream.range(1, 1000)
+                .forEach(value -> quotePool.add(Quote.newBuilder().build()));
         //
     }
 
     /**
      * start generate fake quotes
      */
-    public void start(){
+    public void start() {
         // pricing
         running = true;
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (running){
+                while (running) {
                     List<String> pocket = symbolPool.randoms();
                     for (String symbol : pocket) {
                         // generate price
@@ -85,7 +88,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
     public void publishNewPrice(double price, String symbol) {
         Quote quote = quotePool.poll();
         Quote.Builder builder;
-        if (null == quote){
+        if (null == quote) {
             builder = Quote.newBuilder();
         } else {
             builder = quote.toBuilder();
@@ -103,10 +106,9 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
     /**
      * stop generate fake quotes
      */
-    public void stop(){
+    public void stop() {
         running = false;
     }
-
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -121,5 +123,4 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         running = false;
         logger.info("QuoteProducer Stopping");
     }
-
 }
