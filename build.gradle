@@ -69,7 +69,7 @@ spotless {
 		// cleanthat()
 		palantirJavaFormat()
 		formatAnnotations()  // fixes formatting of type annotations, see below
-		licenseHeader '/* (C) $YEAR */ \n\n' // or licenseHeaderFile
+		licenseHeader '/* lucas, yamingdeng@outlook.com (C) $YEAR */ \n\n' // or licenseHeaderFile
 	}
 }
 

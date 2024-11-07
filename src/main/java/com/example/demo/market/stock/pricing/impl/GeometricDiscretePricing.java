@@ -1,4 +1,4 @@
-/* (C) 2024 */ 
+/* lucas, yamingdeng@outlook.com (C) 2024 */ 
 
 package com.example.demo.market.stock.pricing.impl;
 
