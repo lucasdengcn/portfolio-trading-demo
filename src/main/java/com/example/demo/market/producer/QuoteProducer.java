@@ -3,7 +3,10 @@
 package com.example.demo.market.producer;
 
 import com.example.demo.market.model.Quote;
+import com.example.demo.market.model.Stock;
 import com.example.demo.market.pricing.StockPricing;
+
+import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,7 +29,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      */
     private final QuoteBroker broker;
 
-    private final StockPool symbolPool;
+    private final StockPool stockPool;
     private final StockPricing stockPricing;
     private volatile boolean running = false;
     private final Random random = new Random();
@@ -40,9 +43,9 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      * broker to store latest quotes
      * @param broker
      */
-    public QuoteProducer(QuoteBroker broker, StockPool symbolPool, StockPricing stockPricing) {
+    public QuoteProducer(QuoteBroker broker, StockPool stockPool, StockPricing stockPricing) {
         this.broker = broker;
-        this.symbolPool = symbolPool;
+        this.stockPool = stockPool;
         this.stockPricing = stockPricing;
         // init object pool
         IntStream.range(1, 1000)
@@ -59,16 +62,20 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                int time = randomTime();
                 while (running) {
-                    List<String> pocket = symbolPool.randoms();
+                    List<String> pocket = stockPool.randoms();
                     for (String symbol : pocket) {
                         // generate price
-                        double price = stockPricing.price();
+                        Stock stock = stockPool.getLatestPrice(symbol);
+                        double price = stockPricing.price(stock, Duration.ofMillis(time));
                         // publish price
                         publishNewPrice(price, symbol);
+                        //
+                        stockPool.updatePrice(symbol, price);
                     }
                     // sleep then continue generating latest price
-                    int time = 50 + random.nextInt(100);
+                    time = randomTime();
                     try {
                         Thread.sleep(time);
                     } catch (InterruptedException e) {
@@ -79,6 +86,10 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         });
         thread.setName("QuoteProducer");
         thread.start();
+    }
+
+    private int randomTime() {
+        return 500 + random.nextInt(1500);
     }
 
     /**

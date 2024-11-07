@@ -2,20 +2,39 @@
 
 package com.example.demo.market.producer;
 
+import com.example.demo.market.model.Stock;
 import com.google.common.collect.Lists;
 import java.util.*;
+
+import com.google.common.collect.Maps;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StockPool {
-
-    private final List<String> stocks = Collections.synchronizedList(new ArrayList<>());
+    // init on startup
+    private final List<String> stocks = new ArrayList<>();
+    private final Map<String, Stock> stockPrice = Maps.newConcurrentMap();
     private final Random random = new Random();
+    //
     private final List<String> pocket = Lists.newArrayList();
 
-    public void registerSymbol(String symbol) {
+    public void register(String symbol) {
         if (this.stocks.contains(symbol)) return;
         this.stocks.add(symbol);
+    }
+
+    public void registerPrice(Stock stock){
+        stockPrice.put(stock.getSymbol(), stock);
+    }
+
+    public void updatePrice(String symbol, double price){
+        Stock stock = stockPrice.get(symbol);
+        Stock build = stock.toBuilder().setPrice(price).build();
+        stockPrice.put(symbol, build);
+    }
+
+    public Stock getLatestPrice(String symbol){
+        return stockPrice.get(symbol);
     }
 
     public List<String> getStocks() {
@@ -45,4 +64,5 @@ public class StockPool {
         }
         return pocket;
     }
+
 }

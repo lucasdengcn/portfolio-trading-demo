@@ -11,3 +11,9 @@ message Quote {
     double price = 2;
 }
 
+message Stock {
+    string symbol = 1;
+    double price = 2;
+    double expectedReturn = 3;
+    double deviation = 4;
+}

@@ -38,7 +38,7 @@ class PositionServiceTests {
 
     @Test
     void save_positions() {
-        stockPool.registerSymbol("A");
+        stockPool.register("A");
         optionManager.register(SymbolType.CALL, "A-100-C");
         optionManager.register(SymbolType.PUT, "A-100-P");
         //

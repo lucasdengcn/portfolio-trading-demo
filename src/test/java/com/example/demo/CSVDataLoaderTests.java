@@ -5,7 +5,6 @@ package com.example.demo;
 import com.example.demo.market.producer.StockPool;
 import com.example.demo.portfolio.model.SymbolType;
 import com.example.demo.portfolio.service.OptionManager;
-import com.example.demo.portfolio.service.OptionPool;
 import com.example.demo.portfolio.entity.PositionEntity;
 
 import java.io.IOException;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -38,15 +36,14 @@ class CSVDataLoaderTests {
 
     @Test
     void check_csv_file() throws IOException {
-        Assertions.assertNotNull(csvDataLoader.getCsvFilePath());
-        Path file = csvDataLoader.getCsvFile();
+        Path file = csvDataLoader.getFullPath("csv/sample-portfolio.csv");
         boolean exists = file.toFile().exists();
         Assertions.assertTrue(exists);
     }
 
     @Test
-    void load_csv_file() throws IOException {
-        csvDataLoader.load(new Consumer<List<PositionEntity>>() {
+    void load_Position_csv_file() throws IOException {
+        csvDataLoader.loadPosition(new Consumer<List<PositionEntity>>() {
             @Override
             public void accept(List<PositionEntity> positionEntities) {
                 //
@@ -71,7 +68,7 @@ class CSVDataLoaderTests {
     }
 
     // @Test
-    void load_csv_file_save() throws IOException {
+    void load_Position_csv_file_save() throws IOException {
         Assertions.assertEquals(2, stockPool.countOfStock());
         //
         List<String> stocks = stockPool.getStocks();

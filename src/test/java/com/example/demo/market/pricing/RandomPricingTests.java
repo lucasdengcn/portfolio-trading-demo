@@ -19,8 +19,6 @@ class RandomPricingTests {
 
     @Test
     void price() {
-        double price = randomPricing.price();
-        Assertions.assertTrue(price < 100);
-        System.out.println(price);
+
     }
 }

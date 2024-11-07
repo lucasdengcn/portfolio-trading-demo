@@ -28,7 +28,8 @@ spring.h2:
   console.enabled: true
 
 app:
-  csv-relative-path: csv/sample.csv
+  portfolio-relative-path: csv/sample-portfolio.csv
+  stock-relative-path: csv/sample-stock.csv
 
 market:
   quote-producer-thread.enabled: true
