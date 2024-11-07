@@ -4,7 +4,7 @@ package com.example.demo.market.producer;
 
 import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.Stock;
-import com.example.demo.market.pricing.StockPricing;
+import com.example.demo.market.stock.pricing.StockPricing;
 import java.time.Duration;
 import java.util.List;
 import java.util.Random;
@@ -66,10 +66,9 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
                         // generate price
                         Stock stock = stockPool.getLatestPrice(symbol);
                         double price = stockPricing.price(stock, Duration.ofMillis(time));
+                        stockPool.updatePrice(symbol, price);
                         // publish price
                         publishNewPrice(price, symbol);
-                        //
-                        stockPool.updatePrice(symbol, price);
                     }
                     // sleep then continue generating latest price
                     time = randomTime();

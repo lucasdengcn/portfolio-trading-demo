@@ -17,3 +17,11 @@ message Stock {
     double expectedReturn = 3;
     double deviation = 4;
 }
+
+message Option {
+    string symbol = 1;
+    double strikePrice = 2;
+    int32 maturity = 3;
+    int32 symbolType = 4;
+    string stockSymbol = 5;
+}

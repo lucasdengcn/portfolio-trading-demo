@@ -2,11 +2,12 @@
 
 package com.example.demo;
 
+import com.example.demo.market.model.Option;
 import com.example.demo.market.model.Stock;
+import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.producer.StockPool;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.SymbolType;
-import com.example.demo.portfolio.service.OptionManager;
 import com.example.demo.portfolio.service.PositionService;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,9 @@ public class CSVDataLoader {
 
     @Value("${app.stock-relative-path}")
     private String stockFilePath;
+
+    @Value("${app.option-relative-path}")
+    private String optionFilePath;
 
     @Autowired
     private StockPool stockPool;
@@ -60,7 +63,13 @@ public class CSVDataLoader {
         return Paths.get(path);
     }
 
-    public void loadPosition(Consumer<List<PositionEntity>> entityConsumer) throws IOException {
+    public void loadAll() throws IOException {
+        loadStocks();
+        loadOptions();
+        loadPosition();
+    }
+
+    public void loadPosition() throws IOException {
         Path csvFile = getFullPath(portfolioFilePath);
         logger.debug("portfolio csv file: {}", csvFile.toAbsolutePath());
         List<PositionEntity> entityList = new ArrayList<>();
@@ -75,12 +84,13 @@ public class CSVDataLoader {
                 PositionEntity entity = new PositionEntity(temp[0], Integer.parseInt(temp[1]));
                 //
                 if (temp[0].endsWith("-C")) {
-                    entity.setRelStockSymbol(temp[0].split("-")[0]);
+                    entity.setRelStockSymbol(temp[2]);
                     entity.setSymbolType(SymbolType.CALL.getNumber());
                 } else if (temp[0].endsWith("-P")) {
-                    entity.setRelStockSymbol(temp[0].split("-")[0]);
+                    entity.setRelStockSymbol(temp[2]);
                     entity.setSymbolType(SymbolType.PUT.getNumber());
                 } else {
+                    entity.setRelStockSymbol("");
                     entity.setSymbolType(SymbolType.STOCK.getNumber());
                 }
                 //
@@ -91,30 +101,10 @@ public class CSVDataLoader {
         }
         logger.debug("load positions in total: {}", entityList.size());
         //
-        entityConsumer.accept(entityList);
+        positionService.save(entityList);
     }
 
-    public void loadPositionAndSave() throws IOException {
-        this.loadPosition(new Consumer<List<PositionEntity>>() {
-            @Override
-            public void accept(List<PositionEntity> positionEntities) {
-                //
-                positionService.save(positionEntities);
-                //
-                positionEntities.forEach(item -> {
-                    if (item.getSymbolType() == SymbolType.STOCK_VALUE) {
-                        stockPool.register(item.getSymbol());
-                    } else if (item.getSymbolType() == SymbolType.CALL_VALUE) {
-                        optionManager.register(SymbolType.CALL, item.getSymbol());
-                    } else if (item.getSymbolType() == SymbolType.PUT_VALUE) {
-                        optionManager.register(SymbolType.PUT, item.getSymbol());
-                    }
-                });
-            }
-        });
-    }
-
-    public void loadStockPrices() throws IOException {
+    public void loadStocks() throws IOException {
         Path csvFile = getFullPath(stockFilePath);
         logger.debug("stock csv file: {}", csvFile.toAbsolutePath());
         AtomicInteger count = new AtomicInteger();
@@ -140,5 +130,35 @@ public class CSVDataLoader {
             throw new RuntimeException(e);
         }
         logger.debug("load stocks in total: {}", count.get());
+    }
+
+    public void loadOptions() throws IOException {
+        Path csvFile = getFullPath(optionFilePath);
+        logger.debug("option csv file: {}", csvFile.toAbsolutePath());
+        AtomicInteger count = new AtomicInteger();
+        try (Stream<String> stream = Files.lines(csvFile)) {
+            stream.forEach(s -> {
+                if (s.startsWith("symbol")) {
+                    // the head row
+                    return;
+                }
+                // for demo
+                // symbol,strikePrice,maturity(years),symbolType,stockSymbol
+                String[] temp = s.split(",");
+                Option option = Option.newBuilder()
+                        .setSymbol(temp[0])
+                        .setStrikePrice(new BigDecimal(temp[1]).doubleValue())
+                        .setMaturity(Integer.parseInt(temp[2]))
+                        .setSymbolType(Integer.parseInt(temp[3]))
+                        .setStockSymbol(temp[4])
+                        .build();
+                //
+                optionManager.register(option);
+                count.getAndIncrement();
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        logger.debug("load options in total: {}", count.get());
     }
 }

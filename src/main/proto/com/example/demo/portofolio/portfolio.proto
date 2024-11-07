@@ -21,6 +21,7 @@ message Position {
     double nav = 5;
     SymbolType symbolType = 6;
     uint64 updateTime = 7;
+    string stockSymbol = 8;
 }
 
 message Portfolio {

@@ -2,9 +2,8 @@
 
 package com.example.demo.market.pricing;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.example.demo.market.model.Stock;
+import com.example.demo.market.stock.pricing.GeometricDiscretePricing;
 import java.time.Duration;
 import java.util.Random;
 import org.junit.jupiter.api.Test;

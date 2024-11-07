@@ -2,14 +2,12 @@
 
 package com.example.demo;
 
+import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.producer.StockPool;
-import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.model.SymbolType;
-import com.example.demo.portfolio.service.OptionManager;
+import com.example.demo.portfolio.service.PositionService;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +28,9 @@ class CSVDataLoaderTests {
     @Autowired
     private OptionManager optionManager;
 
+    @Autowired
+    private PositionService positionService;
+
     @BeforeEach
     void setup() {}
 
@@ -41,47 +42,17 @@ class CSVDataLoaderTests {
     }
 
     @Test
-    void load_Position_csv_file() throws IOException {
-        csvDataLoader.loadPosition(new Consumer<List<PositionEntity>>() {
-            @Override
-            public void accept(List<PositionEntity> positionEntities) {
-                //
-                Assertions.assertEquals(6, positionEntities.size());
-                //
-                long count = positionEntities.stream()
-                        .filter(positionEntity -> positionEntity.getSymbolType() == SymbolType.STOCK_VALUE)
-                        .count();
-                Assertions.assertEquals(2, count);
-                //
-                count = positionEntities.stream()
-                        .filter(positionEntity -> positionEntity.getSymbolType() == SymbolType.PUT_VALUE)
-                        .count();
-                Assertions.assertEquals(2, count);
-                //
-                count = positionEntities.stream()
-                        .filter(positionEntity -> positionEntity.getSymbolType() == SymbolType.CALL_VALUE)
-                        .count();
-                Assertions.assertEquals(2, count);
-            }
-        });
-    }
-
-    // @Test
-    void load_Position_csv_file_save() throws IOException {
+    void load_csv_files() throws IOException {
         Assertions.assertEquals(2, stockPool.countOfStock());
         //
         List<String> stocks = stockPool.getStocks();
         Assertions.assertTrue(stocks.contains("AAPL"));
         Assertions.assertTrue(stocks.contains("TELSA"));
         //
-        Assertions.assertEquals(
-                1, optionManager.findSymbols(SymbolType.CALL, "AAPL").size());
-        Assertions.assertEquals(
-                1, optionManager.findSymbols(SymbolType.PUT, "AAPL").size());
+        int count = optionManager.getOptionPool().count();
+        Assertions.assertEquals(4, count);
         //
-        Assertions.assertEquals(
-                1, optionManager.findSymbols(SymbolType.CALL, "TELSA").size());
-        Assertions.assertEquals(
-                1, optionManager.findSymbols(SymbolType.PUT, "TELSA").size());
+        count = positionService.count();
+        Assertions.assertEquals(6, count);
     }
 }

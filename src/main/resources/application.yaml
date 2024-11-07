@@ -30,10 +30,12 @@ spring.h2:
 app:
   portfolio-relative-path: csv/sample-portfolio.csv
   stock-relative-path: csv/sample-stock.csv
+  option-relative-path: csv/sample-options.csv
 
 market:
   quote-producer-thread.enabled: true
   broker-dispatch-thread:
     enabled: true
     timeout: 10
+  risk-free-interest-rate: 2
 

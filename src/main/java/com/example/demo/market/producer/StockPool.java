@@ -11,19 +11,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockPool {
     // init on startup
-    private final List<String> stocks = new ArrayList<>();
+    private final List<String> stocksSymbols = new ArrayList<>();
     private final Map<String, Stock> stockPrice = Maps.newConcurrentMap();
     private final Random random = new Random();
     //
     private final List<String> pocket = Lists.newArrayList();
 
     public void register(String symbol) {
-        if (this.stocks.contains(symbol)) return;
-        this.stocks.add(symbol);
+        if (this.stocksSymbols.contains(symbol)) return;
+        this.stocksSymbols.add(symbol);
     }
 
     public void registerPrice(Stock stock) {
         stockPrice.put(stock.getSymbol(), stock);
+        register(stock.getSymbol());
     }
 
     public void updatePrice(String symbol, double price) {
@@ -37,21 +38,21 @@ public class StockPool {
     }
 
     public List<String> getStocks() {
-        return stocks;
+        return stocksSymbols;
     }
 
     public int countOfStock() {
-        return stocks.size();
+        return stocksSymbols.size();
     }
 
     public boolean contains(String symbol) {
-        return stocks.contains(symbol);
+        return stocksSymbols.contains(symbol);
     }
 
     public String random() {
-        int count = stocks.size();
+        int count = stocksSymbols.size();
         int index = random.nextInt(count);
-        return stocks.get(index);
+        return stocksSymbols.get(index);
     }
 
     public List<String> randoms() {

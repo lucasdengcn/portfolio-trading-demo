@@ -2,12 +2,16 @@
 
 package com.example.demo.portfolio.service;
 
+import com.example.demo.market.model.Option;
 import com.example.demo.market.model.Quote;
+import com.example.demo.market.model.Stock;
+import com.example.demo.market.option.OptionManager;
+import com.example.demo.market.option.pricing.OptionPricing;
+import com.example.demo.market.producer.StockPool;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.Portfolio;
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.model.SymbolType;
-import com.example.demo.portfolio.pricing.OptionPricing;
 import com.example.demo.portfolio.repository.PositionRepository;
 import java.util.Comparator;
 import java.util.List;
@@ -22,7 +26,8 @@ import org.springframework.stereotype.Service;
 public class PositionService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    //
+    private final StockPool stockPool;
     private final PositionRepository positionRepository;
     private final OptionManager optionManager;
     /**
@@ -33,9 +38,11 @@ public class PositionService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public PositionService(
+            StockPool stockPool,
             PositionRepository positionRepository,
             OptionManager optionManager,
             ApplicationEventPublisher applicationEventPublisher) {
+        this.stockPool = stockPool;
         this.positionRepository = positionRepository;
         this.optionManager = optionManager;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -52,6 +59,7 @@ public class PositionService {
                         .setSymbol(item.getSymbol())
                         .setQty(item.getPositionSize())
                         .setSymbolType(SymbolType.forNumber(item.getSymbolType()))
+                        .setStockSymbol(item.getRelStockSymbol())
                         .setNav(0.0f)
                         .setPrice(0.0f)
                         .build()));
@@ -75,14 +83,14 @@ public class PositionService {
         }
         // update stock nav
         stockPosition = updateNavOnSymbol(stockPosition, price);
-        //
-        List<Position> positionList = optionManager.findSymbols(stockQuote.getSymbol()).stream()
-                .map(holdings::get)
-                .collect(Collectors.toList());
-        // update options nav
-        List<Position> positions = positionList.stream()
+        // filter positions by stock symbol
+        // maybe can calculate in other place.
+        List<Position> positions = holdings.entrySet().stream()
+                .filter(stringPositionEntry ->
+                        stringPositionEntry.getValue().getStockSymbol().equalsIgnoreCase(symbol))
                 .parallel()
-                .map(position -> {
+                .map(stringPositionEntry -> {
+                    Position position = stringPositionEntry.getValue();
                     if (SymbolType.PUT.equals(position.getSymbolType())) {
                         return updateOptionNav(stockQuote, position);
                     } else if (SymbolType.CALL.equals(position.getSymbolType())) {
@@ -112,17 +120,19 @@ public class PositionService {
     /**
      * for testing
      *
-     * @param stock
+     * @param quote
      * @param position
      * @return
      */
-    public Position updateOptionNav(Quote stock, Position position) {
+    public Position updateOptionNav(Quote quote, Position position) {
         OptionPricing optionPricing = optionManager.getPricing(position.getSymbolType());
         if (null == optionPricing) {
             logger.info("Option Pricing NOT FOUND. {}", position.getSymbolType());
             return position;
         }
-        double price = optionPricing.price(stock, position);
+        Stock stock = stockPool.getLatestPrice(quote.getSymbol());
+        Option option = optionManager.findOption(position.getSymbol());
+        double price = optionPricing.price(stock, quote, option);
         return updateNavOnSymbol(position, price);
     }
 

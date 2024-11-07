@@ -19,7 +19,6 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        csvDataLoader.loadPositionAndSave();
-        csvDataLoader.loadStockPrices();
+        csvDataLoader.loadAll();
     }
 }
