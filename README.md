@@ -18,6 +18,21 @@ This is a demo application.
 - Jacoco (for code coverage)
 - Spotless (for code formatting)
 
+## Schema Design
+
+### Database Schema
+
+```
+src/main/java/resources/data.sql
+```
+
+### Protobuf Schema
+
+```
+src/main/java/proto/*/market.proto
+src/main/java/proto/*/portfolio.proto
+```
+
 ## How to run?
 
 * make sure JAVA_HOME point to JDK 1.8.
