@@ -3,9 +3,11 @@
 package com.example.demo;
 
 import com.example.demo.market.producer.StockPool;
-import com.example.demo.portfolio.consumer.OptionPool;
+import com.example.demo.portfolio.model.SymbolType;
+import com.example.demo.portfolio.service.OptionManager;
+import com.example.demo.portfolio.service.OptionPool;
 import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.entity.ProductType;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -26,13 +28,10 @@ class CSVDataLoaderTests {
     private CSVDataLoader csvDataLoader;
 
     @Autowired
-    @Qualifier("callOptionPool") OptionPool callOptionPool;
-
-    @Autowired
-    @Qualifier("putOptionPool") OptionPool putOptionPool;
-
-    @Autowired
     private StockPool stockPool;
+
+    @Autowired
+    private OptionManager optionManager;
 
     @BeforeEach
     void setup() {}
@@ -54,17 +53,17 @@ class CSVDataLoaderTests {
                 Assertions.assertEquals(6, positionEntities.size());
                 //
                 long count = positionEntities.stream()
-                        .filter(positionEntity -> positionEntity.getType().equals(ProductType.STOCK))
+                        .filter(positionEntity -> positionEntity.getSymbolType() == SymbolType.STOCK_VALUE)
                         .count();
                 Assertions.assertEquals(2, count);
                 //
                 count = positionEntities.stream()
-                        .filter(positionEntity -> positionEntity.getType().equals(ProductType.PUT))
+                        .filter(positionEntity -> positionEntity.getSymbolType() == SymbolType.PUT_VALUE)
                         .count();
                 Assertions.assertEquals(2, count);
                 //
                 count = positionEntities.stream()
-                        .filter(positionEntity -> positionEntity.getType().equals(ProductType.CALL))
+                        .filter(positionEntity -> positionEntity.getSymbolType() == SymbolType.CALL_VALUE)
                         .count();
                 Assertions.assertEquals(2, count);
             }
@@ -79,10 +78,10 @@ class CSVDataLoaderTests {
         Assertions.assertTrue(stocks.contains("AAPL"));
         Assertions.assertTrue(stocks.contains("TELSA"));
         //
-        Assertions.assertEquals(1, callOptionPool.getOptions("AAPL").size());
-        Assertions.assertEquals(1, putOptionPool.getOptions("AAPL").size());
+        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.CALL, "AAPL").size());
+        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.PUT, "AAPL").size());
         //
-        Assertions.assertEquals(1, callOptionPool.getOptions("TELSA").size());
-        Assertions.assertEquals(1, putOptionPool.getOptions("TELSA").size());
+        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.CALL, "TELSA").size());
+        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.PUT, "TELSA").size());
     }
 }

@@ -25,14 +25,16 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     //
     private volatile boolean running = false;
+    // to simulate broker's message in specific format
     private final LinkedBlockingQueue<ByteString> messages = new LinkedBlockingQueue<>();
+    // registration done on startup
     private final List<QuoteConsumer> consumerList = new ArrayList<>();
     //
-    @Value("${market.broker-dispatch-thread.enabled}")
+    @Value("${market.broker-dispatch-thread.enabled:false}")
     private boolean enabled;
 
-    @Value("${market.broker-dispatch-thread.timeout}")
-    private int waitTimeout = 10;
+    @Value("${market.broker-dispatch-thread.timeout:10}")
+    private int waitTimeout;
 
     public void start() {
         running = true;
@@ -55,6 +57,7 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
 
     public int dispatchMessage() {
         try {
+            // wait until having income messages
             ByteString byteString = messages.poll(waitTimeout, TimeUnit.SECONDS);
             if (null != byteString) {
                 List<Boolean> list = consumerList.stream()
@@ -76,14 +79,26 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
         }
     }
 
+    /**
+     * put message in a queue, and then will notify consumer immediately
+     * @param quote
+     */
     public void publish(Quote quote) {
         messages.add(quote.toByteString());
     }
 
+    /**
+     * registration done on startup
+     * @param consumer
+     */
     public void add(QuoteConsumer consumer) {
         consumerList.add(consumer);
     }
 
+    /**
+     * for testing
+     * @return
+     */
     public ByteString peek() {
         return messages.peek();
     }

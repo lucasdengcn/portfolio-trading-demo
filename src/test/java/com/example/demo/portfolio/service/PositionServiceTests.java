@@ -2,12 +2,10 @@
 
 package com.example.demo.portfolio.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.example.demo.market.model.Quote;
 import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.entity.ProductType;
 import com.example.demo.portfolio.model.Position;
+import com.example.demo.portfolio.model.SymbolType;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,9 +28,9 @@ class PositionServiceTests {
 
     @Test
     void save_positions() {
-        PositionEntity positionEntity = new PositionEntity("A", 1, ProductType.STOCK);
-        PositionEntity positionEntity2 = new PositionEntity("A-100-P", -1, ProductType.PUT);
-        PositionEntity positionEntity3 = new PositionEntity("A-100-C", 1, ProductType.CALL);
+        PositionEntity positionEntity = new PositionEntity("A", 1, SymbolType.STOCK_VALUE);
+        PositionEntity positionEntity2 = new PositionEntity("A-100-P", -1, SymbolType.PUT_VALUE);
+        PositionEntity positionEntity3 = new PositionEntity("A-100-C", 1, SymbolType.CALL_VALUE);
         positionService.save(Lists.newArrayList(positionEntity, positionEntity2, positionEntity3));
         //
         Assertions.assertEquals(3, positionService.count());

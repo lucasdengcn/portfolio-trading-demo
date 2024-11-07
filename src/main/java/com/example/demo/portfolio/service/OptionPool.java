@@ -1,8 +1,9 @@
 /* (C) 2024 */ 
 
-package com.example.demo.portfolio.consumer;
+package com.example.demo.portfolio.service;
 
-import com.example.demo.portfolio.entity.ProductType;
+import com.example.demo.portfolio.model.SymbolType;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,14 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OptionPool {
 
     private final ConcurrentHashMap<String, Set<String>> optionMap = new ConcurrentHashMap<>();
-    private final ProductType productType;
+    private final SymbolType symbolType;
 
-    public OptionPool(ProductType productType) {
-        this.productType = productType;
+    public OptionPool(SymbolType symbolType) {
+        this.symbolType = symbolType;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public SymbolType getProductType() {
+        return symbolType;
     }
 
     public void registerOption(String symbol) {

@@ -17,7 +17,7 @@ public class PositionEntity {
     @Column("POSITION_SIZE")
     private Integer positionSize;
 
-    private ProductType type;
+    private int symbolType;
 
     @Column("REL_STOCK_SYMBOL")
     private String relStockSymbol;
@@ -29,16 +29,16 @@ public class PositionEntity {
         this.positionSize = positionSize;
     }
 
-    public PositionEntity(String symbol, Integer positionSize, ProductType type) {
+    public PositionEntity(String symbol, Integer positionSize, int type) {
         this.symbol = symbol;
         this.positionSize = positionSize;
-        this.type = type;
+        this.symbolType = type;
     }
 
-    public PositionEntity(String symbol, Integer positionSize, ProductType type, String relStockSymbol) {
+    public PositionEntity(String symbol, Integer positionSize, int type, String relStockSymbol) {
         this.symbol = symbol;
         this.positionSize = positionSize;
-        this.type = type;
+        this.symbolType = type;
         this.relStockSymbol = relStockSymbol;
     }
 
@@ -66,12 +66,12 @@ public class PositionEntity {
         this.positionSize = positionSize;
     }
 
-    public ProductType getType() {
-        return type;
+    public int getSymbolType() {
+        return symbolType;
     }
 
-    public void setType(ProductType type) {
-        this.type = type;
+    public void setSymbolType(int symbolType) {
+        this.symbolType = symbolType;
     }
 
     public String getRelStockSymbol() {

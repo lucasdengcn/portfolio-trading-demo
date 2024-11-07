@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.IntStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -30,9 +31,9 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
     private volatile boolean running = false;
     private final Random random = new Random();
     //
-    private final ConcurrentLinkedQueue<Quote> quotePool = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Quote.Builder> quotePool = new ConcurrentLinkedQueue<>();
     //
-    @Value("${market.quote-producer-thread.enabled}")
+    @Value("${market.quote-producer-thread.enabled:false}")
     private boolean enabled;
 
     /**
@@ -45,7 +46,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         this.stockPricing = stockPricing;
         // init object pool
         IntStream.range(1, 1000)
-                .forEach(value -> quotePool.add(Quote.newBuilder().build()));
+                .forEach(value -> quotePool.add(Quote.newBuilder()));
         //
     }
 
@@ -66,8 +67,8 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
                         // publish price
                         publishNewPrice(price, symbol);
                     }
-                    //
-                    int time = 50 + random.nextInt(500);
+                    // sleep then continue generating latest price
+                    int time = 50 + random.nextInt(100);
                     try {
                         Thread.sleep(time);
                     } catch (InterruptedException e) {
@@ -86,20 +87,18 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      * @param symbol
      */
     public void publishNewPrice(double price, String symbol) {
-        Quote quote = quotePool.poll();
-        Quote.Builder builder;
-        if (null == quote) {
+        Quote.Builder builder = quotePool.poll();
+        if (null == builder) {
             builder = Quote.newBuilder();
-        } else {
-            builder = quote.toBuilder();
         }
         try {
-            quote = builder.setPrice(price).setSymbol(symbol).build();
+            // quote is immutable object, it is thread-safe
+            Quote quote = builder.setPrice(price).setSymbol(symbol).build();
             broker.publish(quote);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            quotePool.add(quote);
+            quotePool.add(builder);
         }
     }
 

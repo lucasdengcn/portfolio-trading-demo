@@ -12,12 +12,6 @@ public abstract class AbstractQuoteConsumerImpl implements QuoteConsumer, Dispos
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    protected final OptionPool optionPool;
-
-    public AbstractQuoteConsumerImpl(OptionPool optionPool) {
-        this.optionPool = optionPool;
-    }
-
     public abstract void handle(ByteString byteString) throws Exception;
 
     @Override

@@ -3,15 +3,14 @@
 package com.example.demo;
 
 import com.example.demo.market.producer.StockPool;
-import com.example.demo.portfolio.consumer.OptionPool;
 import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.entity.ProductType;
+import com.example.demo.portfolio.model.SymbolType;
+import com.example.demo.portfolio.service.OptionManager;
 import com.example.demo.portfolio.service.PositionService;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,14 +32,10 @@ public class DemoApplication implements CommandLineRunner {
     private CSVDataLoader csvDataLoader;
 
     @Autowired
-    @Qualifier("callOptionPool") OptionPool callOptionPool;
-
-    @Autowired
-    @Qualifier("putOptionPool") OptionPool putOptionPool;
+    private OptionManager optionManager;
 
     @Override
     public void run(String... args) throws Exception {
-        //
         loadPositionData();
     }
 
@@ -52,12 +47,12 @@ public class DemoApplication implements CommandLineRunner {
                 positionService.save(positionEntities);
                 //
                 positionEntities.forEach(item -> {
-                    if (item.getType().equals(ProductType.STOCK)) {
+                    if (item.getSymbolType() == SymbolType.STOCK_VALUE) {
                         stockPool.registerSymbol(item.getSymbol());
-                    } else if (item.getType().equals(ProductType.CALL)) {
-                        callOptionPool.registerOption(item.getSymbol());
-                    } else if (item.getType().equals(ProductType.PUT)) {
-                        putOptionPool.registerOption(item.getSymbol());
+                    } else if (item.getSymbolType() == SymbolType.CALL_VALUE) {
+                        optionManager.register(SymbolType.CALL, item.getSymbol());
+                    } else if (item.getSymbolType() == SymbolType.PUT_VALUE) {
+                        optionManager.register(SymbolType.PUT, item.getSymbol());
                     }
                 });
             }

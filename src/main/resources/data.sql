@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS positions (
     id SERIAL PRIMARY KEY,
     symbol VARCHAR(255) NOT NULL,
     position_size INT NOT NULL,
-    type VARCHAR(5) NOT NULL,
+    symbol_type int NOT NULL,
     rel_stock_symbol VARCHAR(255) NULL,
     latest_price DOUBLE NOT NULL DEFAULT 0,
     latest_nav DOUBLE NOT NULL DEFAULT 0,

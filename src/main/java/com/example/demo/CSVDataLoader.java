@@ -3,7 +3,7 @@
 package com.example.demo;
 
 import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.entity.ProductType;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import com.example.demo.portfolio.model.SymbolType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,12 +59,12 @@ public class CSVDataLoader {
                 //
                 if (temp[0].endsWith("-C")) {
                     entity.setRelStockSymbol(temp[0].split("-")[0]);
-                    entity.setType(ProductType.CALL);
+                    entity.setSymbolType(SymbolType.CALL.getNumber());
                 } else if (temp[0].endsWith("-P")) {
                     entity.setRelStockSymbol(temp[0].split("-")[0]);
-                    entity.setType(ProductType.PUT);
+                    entity.setSymbolType(SymbolType.PUT.getNumber());
                 } else {
-                    entity.setType(ProductType.STOCK);
+                    entity.setSymbolType(SymbolType.STOCK.getNumber());
                 }
                 //
                 entityList.add(entity);
