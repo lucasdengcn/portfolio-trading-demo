@@ -105,3 +105,6 @@ please ensure JAVA_HOME point to JDK 1.8.
 ./gradlew build
 ```
 
+## Author
+
+lucas, yamingdeng@outlook.com
