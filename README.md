@@ -18,7 +18,9 @@ This is a demo application.
 
 ## How to run?
 
-make sure at the project root directory, and run following command in shell.
+* make sure JAVA_HOME point to JDK 1.8.
+
+* make sure at the project root directory, and run following command in shell.
 
 ```shell
 ./gradlew bootRun
@@ -27,6 +29,7 @@ make sure at the project root directory, and run following command in shell.
 ## Sample data
 
 to demo this application, would need following csv files in the designed csv folder in project root directory.
+
 if want to change the file content, please make sure following the csv headers.
 
 ```shell
