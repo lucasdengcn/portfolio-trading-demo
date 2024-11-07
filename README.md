@@ -6,9 +6,11 @@ This is a demo application.
 
 - JDK 1.8
 - Spring Boot 2.7
-- H2
+- H2 2.1.214
 - Gradle
 - Protobuf 4.28.3
+- Guava 33.3.1-jre
+- JUnit 5.8.2
 
 ## Gradle Plugins
 
