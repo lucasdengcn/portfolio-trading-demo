@@ -7,16 +7,21 @@ import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.Stock;
 import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.option.pricing.OptionPricing;
-import com.example.demo.market.producer.StockPool;
+import com.example.demo.market.stock.StockPool;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.Portfolio;
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.model.SymbolType;
 import com.example.demo.portfolio.repository.PositionRepository;
-import java.util.Comparator;
-import java.util.List;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -63,6 +68,16 @@ public class PositionService {
                         .setNav(0.0f)
                         .setPrice(0.0f)
                         .build()));
+        // init price, qty.
+        holdings.values().stream().filter(item -> item.getSymbolType().equals(SymbolType.STOCK))
+                .forEach(new Consumer<Position>() {
+                    @Override
+                    public void accept(Position position) {
+                        Stock price = stockPool.getLatestPrice(position.getSymbol());
+                        Quote quote = Quote.newBuilder().setPrice(price.getPrice()).setSymbol(position.getSymbol()).build();
+                        updateOnPriceChange(quote);
+                    }
+                });
     }
 
     public void deleteAll() {
@@ -82,10 +97,10 @@ public class PositionService {
             return;
         }
         // update stock nav
-        stockPosition = updateNavOnSymbol(stockPosition, price);
+        updateNavOnSymbol(stockPosition, price);
         // filter positions by stock symbol
         // maybe can calculate in other place.
-        List<Position> positions = holdings.entrySet().stream()
+        holdings.entrySet().stream()
                 .filter(stringPositionEntry ->
                         stringPositionEntry.getValue().getStockSymbol().equalsIgnoreCase(symbol))
                 .parallel()
@@ -99,21 +114,9 @@ public class PositionService {
                     return position;
                 })
                 .collect(Collectors.toList());
-        // sort by symbols
-        positions.add(stockPosition);
-        positions.sort(Comparator.comparing(Position::getSymbol));
-        // notify dashboard
-        double sumOfNav = getSumOfNav(positions);
-        //
-        Portfolio portfolio = Portfolio.newBuilder()
-                .setTotal(sumOfNav)
-                .addAllHoldings(positions)
-                .setUpdateTime(System.currentTimeMillis())
-                .build();
-        applicationEventPublisher.publishEvent(portfolio);
     }
 
-    public double getSumOfNav(List<Position> positions) {
+    public double getSumOfNav(Collection<Position> positions) {
         return positions.stream().map(Position::getNav).reduce(0.0d, Double::sum);
     }
 
@@ -144,9 +147,14 @@ public class PositionService {
      * @return
      */
     private Position updateNavOnSymbol(Position position, double price) {
+        //
+        BigDecimal v1 = BigDecimal.valueOf(price).setScale(2, RoundingMode.DOWN);
+        BigDecimal v2 = BigDecimal.valueOf(position.getQty());
+        //
+        BigDecimal v3 = v1.multiply(v2).setScale(2, RoundingMode.DOWN);
         Position positionUpdated = position.toBuilder()
-                .setPrice(price)
-                .setNav(price * position.getQty())
+                .setPrice(v1.doubleValue())
+                .setNav(v3.doubleValue())
                 .setUpdateTime(System.currentTimeMillis())
                 .build();
         holdings.put(position.getSymbol(), positionUpdated);
@@ -161,4 +169,18 @@ public class PositionService {
     public Integer count() {
         return holdings.size();
     }
+
+    public Portfolio getPortfolioDetail() {
+        List<Position> positions = Lists.newArrayList(this.holdings.values());
+        double sumOfNav = getSumOfNav(positions);
+        //
+        positions.sort(Comparator.comparing(Position::getSymbol));
+        //
+        return Portfolio.newBuilder()
+                .setTotal(sumOfNav)
+                .addAllHoldings(positions)
+                .setUpdateTime(System.currentTimeMillis())
+                .build();
+    }
+
 }

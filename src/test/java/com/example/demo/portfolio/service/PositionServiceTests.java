@@ -6,7 +6,7 @@ import com.example.demo.market.model.Option;
 import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.Stock;
 import com.example.demo.market.option.OptionManager;
-import com.example.demo.market.producer.StockPool;
+import com.example.demo.market.stock.StockPool;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.model.SymbolType;

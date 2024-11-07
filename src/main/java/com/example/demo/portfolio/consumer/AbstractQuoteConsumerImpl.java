@@ -7,8 +7,9 @@ import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
-public abstract class AbstractQuoteConsumerImpl implements QuoteConsumer, DisposableBean {
+public abstract class AbstractQuoteConsumerImpl implements QuoteConsumer, InitializingBean, DisposableBean {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

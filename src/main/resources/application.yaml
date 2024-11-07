@@ -3,6 +3,8 @@ spring.application:
 
 
 logging:
+  path: logs/
+  file: app.log
   level:
     root: INFO
     org.springframework: INFO

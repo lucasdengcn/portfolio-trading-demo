@@ -2,8 +2,9 @@
 
 package com.example.demo.market;
 
-import com.example.demo.market.producer.StockPool;
-import java.util.List;
+import com.example.demo.market.stock.StockPool;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +20,7 @@ class StockPoolTests {
     @Test
     void test_on_randoms() {
         for (int i = 0; i < 10; i++) {
-            List<String> randoms = stockPool.randoms();
+            Set<String> randoms = stockPool.randoms();
             System.out.println(randoms);
         }
     }

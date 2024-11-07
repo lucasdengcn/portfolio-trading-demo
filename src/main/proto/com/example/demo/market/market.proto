@@ -11,6 +11,10 @@ message Quote {
     double price = 2;
 }
 
+message QuoteBatch {
+    repeated Quote items = 1;
+}
+
 message Stock {
     string symbol = 1;
     double price = 2;

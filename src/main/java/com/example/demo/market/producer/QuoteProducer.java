@@ -3,11 +3,13 @@
 package com.example.demo.market.producer;
 
 import com.example.demo.market.model.Quote;
+import com.example.demo.market.model.QuoteBatch;
 import com.example.demo.market.model.Stock;
+import com.example.demo.market.stock.StockPool;
 import com.example.demo.market.stock.pricing.StockPricing;
 import java.time.Duration;
-import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.IntStream;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
     private final Random random = new Random();
     //
     private final ConcurrentLinkedQueue<Quote.Builder> quotePool = new ConcurrentLinkedQueue<>();
+    private final QuoteBatch.Builder quoteBatchBuilder = QuoteBatch.newBuilder();
     //
     @Value("${market.quote-producer-thread.enabled:false}")
     private boolean enabled;
@@ -61,14 +64,18 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
             public void run() {
                 int time = randomTime();
                 while (running) {
-                    List<String> pocket = stockPool.randoms();
-                    for (String symbol : pocket) {
-                        // generate price
-                        Stock stock = stockPool.getLatestPrice(symbol);
-                        double price = stockPricing.price(stock, Duration.ofMillis(time));
-                        stockPool.updatePrice(symbol, price);
-                        // publish price
-                        publishNewPrice(price, symbol);
+                    Set<String> pocket = stockPool.randoms();
+                    if (!pocket.isEmpty()) {
+                        for (String symbol : pocket) {
+                            // generate price
+                            Stock stock = stockPool.getLatestPrice(symbol);
+                            double price = stockPricing.price(stock, Duration.ofMillis(time));
+                            stockPool.updatePrice(symbol, price);
+                            wrapNewPrice(price, symbol);
+                        }
+                        //
+                        broker.publish(quoteBatchBuilder.build());
+                        quoteBatchBuilder.clear();
                     }
                     // sleep then continue generating latest price
                     time = randomTime();
@@ -85,7 +92,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
     }
 
     private int randomTime() {
-        return 500 + random.nextInt(1500);
+        return 1000 + random.nextInt(1500);
     }
 
     /**
@@ -93,7 +100,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      * @param price
      * @param symbol
      */
-    public void publishNewPrice(double price, String symbol) {
+    public void wrapNewPrice(double price, String symbol) {
         Quote.Builder builder = quotePool.poll();
         if (null == builder) {
             builder = Quote.newBuilder();
@@ -101,10 +108,11 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         try {
             // quote is immutable object, it is thread-safe
             Quote quote = builder.setPrice(price).setSymbol(symbol).build();
-            broker.publish(quote);
+            quoteBatchBuilder.addItems(quote);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage(), e);
         } finally {
+            builder.clear();
             quotePool.add(builder);
         }
     }

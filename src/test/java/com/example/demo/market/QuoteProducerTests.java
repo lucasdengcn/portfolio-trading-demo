@@ -23,14 +23,14 @@ class QuoteProducerTests {
 
     @Test
     void test_on_publish_new_price() {
-        quoteProducer.publishNewPrice(1.0f, "A");
+        quoteProducer.wrapNewPrice(1.0f, "A");
         ByteString byteString = quoteBroker.peek();
         Assertions.assertNotNull(byteString);
     }
 
     @Test
     void test_on_publish_new_price_and_consume() {
-        quoteProducer.publishNewPrice(1.0f, "A");
+        quoteProducer.wrapNewPrice(1.0f, "A");
         ByteString byteString = quoteBroker.peek();
         Assertions.assertNotNull(byteString);
         //

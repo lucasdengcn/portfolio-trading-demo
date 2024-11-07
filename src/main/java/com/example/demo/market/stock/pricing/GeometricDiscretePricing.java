@@ -3,6 +3,7 @@
 package com.example.demo.market.stock.pricing;
 
 import com.example.demo.market.model.Stock;
+
 import java.time.Duration;
 import java.util.Random;
 
@@ -26,6 +27,7 @@ public class GeometricDiscretePricing implements StockPricing {
         //
         double delta = 1 + mu + drift;
         //
-        return stock.getPrice() * delta;
+        double v = stock.getPrice() * delta;
+        return v;
     }
 }
