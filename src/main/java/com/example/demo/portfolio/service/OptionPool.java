@@ -40,4 +40,9 @@ public class OptionPool {
         }
         return Collections.emptySet();
     }
+
+    public void clear(){
+        optionMap.clear();
+    }
+
 }

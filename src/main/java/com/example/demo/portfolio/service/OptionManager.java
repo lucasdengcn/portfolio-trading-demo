@@ -52,4 +52,8 @@ public class OptionManager {
         return optionPricingMap.get(type);
     }
 
+    public void clear(){
+        optionPoolMap.values().forEach(OptionPool::clear);
+    }
+
 }

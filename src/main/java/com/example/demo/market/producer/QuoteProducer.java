@@ -53,7 +53,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
     /**
      * start generate fake quotes
      */
-    public void start() {
+    private void start() {
         // pricing
         running = true;
         Thread thread = new Thread(new Runnable() {
@@ -100,13 +100,6 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         } finally {
             quotePool.add(builder);
         }
-    }
-
-    /**
-     * stop generate fake quotes
-     */
-    public void stop() {
-        running = false;
     }
 
     @Override
