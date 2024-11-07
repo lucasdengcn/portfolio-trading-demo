@@ -5,7 +5,9 @@ package com.example.demo;
 import com.example.demo.market.model.Stock;
 import com.example.demo.market.producer.StockPool;
 import com.example.demo.portfolio.entity.PositionEntity;
-
+import com.example.demo.portfolio.model.SymbolType;
+import com.example.demo.portfolio.service.OptionManager;
+import com.example.demo.portfolio.service.PositionService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -16,10 +18,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import com.example.demo.portfolio.model.SymbolType;
-import com.example.demo.portfolio.service.OptionManager;
-import com.example.demo.portfolio.service.PositionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +127,8 @@ public class CSVDataLoader {
                 // for demo
                 // symbol,price,expected_return,deviation
                 String[] temp = s.split(",");
-                Stock stock = Stock.newBuilder().setSymbol(temp[0])
+                Stock stock = Stock.newBuilder()
+                        .setSymbol(temp[0])
                         .setPrice(new BigDecimal(temp[1]).doubleValue())
                         .setExpectedReturn(new BigDecimal(temp[2]).doubleValue())
                         .setDeviation(new BigDecimal(temp[3]).doubleValue())
@@ -142,5 +141,4 @@ public class CSVDataLoader {
         }
         logger.debug("load stocks in total: {}", count.get());
     }
-
 }

@@ -9,12 +9,10 @@ import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.model.SymbolType;
 import com.example.demo.portfolio.pricing.OptionPricing;
 import com.example.demo.portfolio.repository.PositionRepository;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,8 +32,10 @@ public class PositionService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public PositionService(PositionRepository positionRepository,
-                           OptionManager optionManager, ApplicationEventPublisher applicationEventPublisher) {
+    public PositionService(
+            PositionRepository positionRepository,
+            OptionManager optionManager,
+            ApplicationEventPublisher applicationEventPublisher) {
         this.positionRepository = positionRepository;
         this.optionManager = optionManager;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -70,32 +70,38 @@ public class PositionService {
         double price = stockQuote.getPrice();
         //
         Position stockPosition = holdings.get(symbol);
-        if (null == stockPosition){
+        if (null == stockPosition) {
             return;
         }
         // update stock nav
         stockPosition = updateNavOnSymbol(stockPosition, price);
         //
-        List<Position> positionList = optionManager.findSymbols(stockQuote.getSymbol())
-                .stream().map(holdings::get).collect(Collectors.toList());
+        List<Position> positionList = optionManager.findSymbols(stockQuote.getSymbol()).stream()
+                .map(holdings::get)
+                .collect(Collectors.toList());
         // update options nav
-        List<Position> positions = positionList.stream().parallel().map(position -> {
-            if (SymbolType.PUT.equals(position.getSymbolType())){
-                return updateOptionNav(stockQuote, position);
-            } else if (SymbolType.CALL.equals(position.getSymbolType())){
-                return updateOptionNav(stockQuote, position);
-            }
-            return position;
-        }).collect(Collectors.toList());
+        List<Position> positions = positionList.stream()
+                .parallel()
+                .map(position -> {
+                    if (SymbolType.PUT.equals(position.getSymbolType())) {
+                        return updateOptionNav(stockQuote, position);
+                    } else if (SymbolType.CALL.equals(position.getSymbolType())) {
+                        return updateOptionNav(stockQuote, position);
+                    }
+                    return position;
+                })
+                .collect(Collectors.toList());
         // sort by symbols
         positions.add(stockPosition);
         positions.sort(Comparator.comparing(Position::getSymbol));
         // notify dashboard
         double sumOfNav = getSumOfNav(positions);
         //
-        Portfolio portfolio = Portfolio.newBuilder().setTotal(sumOfNav)
+        Portfolio portfolio = Portfolio.newBuilder()
+                .setTotal(sumOfNav)
                 .addAllHoldings(positions)
-                .setUpdateTime(System.currentTimeMillis()).build();
+                .setUpdateTime(System.currentTimeMillis())
+                .build();
         applicationEventPublisher.publishEvent(portfolio);
     }
 
@@ -112,7 +118,7 @@ public class PositionService {
      */
     public Position updateOptionNav(Quote stock, Position position) {
         OptionPricing optionPricing = optionManager.getPricing(position.getSymbolType());
-        if (null == optionPricing){
+        if (null == optionPricing) {
             logger.info("Option Pricing NOT FOUND. {}", position.getSymbolType());
             return position;
         }

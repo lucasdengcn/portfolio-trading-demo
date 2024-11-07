@@ -5,13 +5,11 @@ package com.example.demo.market.producer;
 import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.Stock;
 import com.example.demo.market.pricing.StockPricing;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.IntStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -48,8 +46,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         this.stockPool = stockPool;
         this.stockPricing = stockPricing;
         // init object pool
-        IntStream.range(1, 1000)
-                .forEach(value -> quotePool.add(Quote.newBuilder()));
+        IntStream.range(1, 1000).forEach(value -> quotePool.add(Quote.newBuilder()));
         //
     }
 

@@ -3,10 +3,9 @@
 package com.example.demo;
 
 import com.example.demo.market.producer.StockPool;
+import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.SymbolType;
 import com.example.demo.portfolio.service.OptionManager;
-import com.example.demo.portfolio.entity.PositionEntity;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -75,10 +74,14 @@ class CSVDataLoaderTests {
         Assertions.assertTrue(stocks.contains("AAPL"));
         Assertions.assertTrue(stocks.contains("TELSA"));
         //
-        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.CALL, "AAPL").size());
-        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.PUT, "AAPL").size());
+        Assertions.assertEquals(
+                1, optionManager.findSymbols(SymbolType.CALL, "AAPL").size());
+        Assertions.assertEquals(
+                1, optionManager.findSymbols(SymbolType.PUT, "AAPL").size());
         //
-        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.CALL, "TELSA").size());
-        Assertions.assertEquals(1, optionManager.findSymbols(SymbolType.PUT, "TELSA").size());
+        Assertions.assertEquals(
+                1, optionManager.findSymbols(SymbolType.CALL, "TELSA").size());
+        Assertions.assertEquals(
+                1, optionManager.findSymbols(SymbolType.PUT, "TELSA").size());
     }
 }

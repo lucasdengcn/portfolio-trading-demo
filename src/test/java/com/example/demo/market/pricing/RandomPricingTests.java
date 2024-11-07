@@ -4,9 +4,9 @@ package com.example.demo.market.pricing;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Assertions;
+import com.example.demo.market.model.Stock;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -14,11 +14,10 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class RandomPricingTests {
 
-    @Autowired
-    RandomPricing randomPricing;
-
     @Test
     void price() {
-
+        RandomPricing randomPricing = new RandomPricing();
+        double price = randomPricing.price(Stock.newBuilder().setPrice(100.0).build(), Duration.ofSeconds(1));
+        System.out.println(price);
     }
 }

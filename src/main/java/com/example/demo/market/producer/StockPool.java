@@ -4,9 +4,8 @@ package com.example.demo.market.producer;
 
 import com.example.demo.market.model.Stock;
 import com.google.common.collect.Lists;
-import java.util.*;
-
 import com.google.common.collect.Maps;
+import java.util.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,17 +22,17 @@ public class StockPool {
         this.stocks.add(symbol);
     }
 
-    public void registerPrice(Stock stock){
+    public void registerPrice(Stock stock) {
         stockPrice.put(stock.getSymbol(), stock);
     }
 
-    public void updatePrice(String symbol, double price){
+    public void updatePrice(String symbol, double price) {
         Stock stock = stockPrice.get(symbol);
         Stock build = stock.toBuilder().setPrice(price).build();
         stockPrice.put(symbol, build);
     }
 
-    public Stock getLatestPrice(String symbol){
+    public Stock getLatestPrice(String symbol) {
         return stockPrice.get(symbol);
     }
 
@@ -64,5 +63,4 @@ public class StockPool {
         }
         return pocket;
     }
-
 }

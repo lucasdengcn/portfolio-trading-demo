@@ -14,9 +14,7 @@ public class PortfolioConfiguration {
 
     @Bean("quoteConsumer")
     public QuoteConsumerImpl callOptionConsumer(
-            QuoteBroker quoteBroker,
-            StockPool stockPool,
-            PositionService positionService) {
+            QuoteBroker quoteBroker, StockPool stockPool, PositionService positionService) {
         QuoteConsumerImpl consumer = new QuoteConsumerImpl(stockPool, positionService);
         quoteBroker.add(consumer);
         return consumer;

@@ -60,6 +60,7 @@ spotless {
 	java {
 		// Use the default importOrder configuration
 		importOrderFile('spotless.importorder')
+		targetExclude("**/generated/**/*.java")
 		removeUnusedImports()
 		// cleanthat()
 		palantirJavaFormat()

@@ -5,12 +5,10 @@ package com.example.demo.portfolio.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.demo.portfolio.entity.PositionEntity;
-
+import com.example.demo.portfolio.model.SymbolType;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import com.example.demo.portfolio.model.SymbolType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

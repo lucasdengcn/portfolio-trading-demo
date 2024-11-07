@@ -3,7 +3,6 @@
 package com.example.demo.portfolio.repository;
 
 import com.example.demo.portfolio.entity.PositionEntity;
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;

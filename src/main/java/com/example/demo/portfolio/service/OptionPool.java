@@ -3,7 +3,6 @@
 package com.example.demo.portfolio.service;
 
 import com.example.demo.portfolio.model.SymbolType;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,8 +40,7 @@ public class OptionPool {
         return Collections.emptySet();
     }
 
-    public void clear(){
+    public void clear() {
         optionMap.clear();
     }
-
 }

@@ -1,3 +1,5 @@
+/* (C) 2024 */ 
+
 package com.example.demo.portfolio.service;
 
 import com.example.demo.portfolio.model.SymbolType;
@@ -5,14 +7,13 @@ import com.example.demo.portfolio.pricing.CallOptionPricing;
 import com.example.demo.portfolio.pricing.OptionPricing;
 import com.example.demo.portfolio.pricing.PutOptionPricing;
 import com.google.common.collect.Maps;
-import org.springframework.stereotype.Component;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.springframework.stereotype.Component;
 
 @Component
 public class OptionManager {
@@ -33,27 +34,26 @@ public class OptionManager {
      * @param type
      * @param symbol
      */
-    public void register(SymbolType type, String symbol){
+    public void register(SymbolType type, String symbol) {
         optionPoolMap.get(type).registerOption(symbol);
     }
 
-    public Set<String> findSymbols(String stock){
+    public Set<String> findSymbols(String stock) {
         return optionPoolMap.values().stream()
                 .map(optionPool -> optionPool.getOptions(stock))
                 .flatMap((Function<Set<String>, Stream<String>>) Collection::stream)
                 .collect(Collectors.toSet());
     }
 
-    public Set<String> findSymbols(SymbolType type, String stock){
+    public Set<String> findSymbols(SymbolType type, String stock) {
         return optionPoolMap.get(type).getOptions(stock);
     }
 
-    public OptionPricing getPricing(SymbolType type){
+    public OptionPricing getPricing(SymbolType type) {
         return optionPricingMap.get(type);
     }
 
-    public void clear(){
+    public void clear() {
         optionPoolMap.values().forEach(OptionPool::clear);
     }
-
 }

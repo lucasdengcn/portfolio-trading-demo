@@ -8,14 +8,13 @@ import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.model.SymbolType;
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -74,11 +73,14 @@ class PositionServiceTests {
     @Test
     void test_update_option_nav() {
         Quote quote = Quote.newBuilder().setPrice(100.0f).setSymbol("A").build();
-        Position position = Position.newBuilder().setSymbolType(SymbolType.CALL).setQty(1).setSymbol("A-100-C").build();
+        Position position = Position.newBuilder()
+                .setSymbolType(SymbolType.CALL)
+                .setQty(1)
+                .setSymbol("A-100-C")
+                .build();
         //
         Position positionUpdated = positionService.updateOptionNav(quote, position);
         Assertions.assertEquals(100.0f, positionUpdated.getNav());
         Assertions.assertEquals(100.0f, positionUpdated.getPrice());
     }
-
 }

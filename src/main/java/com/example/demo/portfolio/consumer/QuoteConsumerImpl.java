@@ -2,8 +2,8 @@
 
 package com.example.demo.portfolio.consumer;
 
-import com.example.demo.market.producer.StockPool;
 import com.example.demo.market.model.Quote;
+import com.example.demo.market.producer.StockPool;
 import com.example.demo.portfolio.service.PositionService;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
