@@ -46,7 +46,7 @@ public class ConsoleDashboard {
         sw.append("\n");
         sw.append("## Portfolio\n");
         //
-        sw.append(formatSymbol("symbol")) // 50
+        sw.append(formatSymbol("symbol")) // 40
                 .append(formatNumberCol("price")) // 20
                 .append(formatNumberCol("qty")) // 20
                 .append(formatNumberCol("value")).append("\n"); // 20
@@ -58,7 +58,7 @@ public class ConsoleDashboard {
                     .append("\n");
         }
         // footer
-        int totalWidth = 110;
+        int totalWidth = 100;
         String string = decimalFormat.format(portfolioDetail.getTotal());
         String title = "## Total portfolio";
         sw.append("\n").append(title).append(Strings.padStart(string, totalWidth - title.length(), ' '));
@@ -72,7 +72,7 @@ public class ConsoleDashboard {
     }
 
     private String formatSymbol(String text){
-        return Strings.padEnd(text, 50, ' ');
+        return Strings.padEnd(text, 40, ' ');
     }
 
     public String formatNumeric(double value){
