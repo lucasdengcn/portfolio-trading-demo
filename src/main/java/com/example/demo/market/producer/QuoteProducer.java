@@ -33,8 +33,9 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
     private final StockPricing stockPricing;
     private volatile boolean running = false;
     private final Random random = new Random();
-    //
+    // object pooling
     private final ConcurrentLinkedQueue<Quote.Builder> quotePool = new ConcurrentLinkedQueue<>();
+    // if running in multiple instance, would need to corresponding instance
     private final QuoteBatch.Builder quoteBatchBuilder = QuoteBatch.newBuilder();
     //
     @Value("${market.quote-producer-thread.enabled:false}")
@@ -48,7 +49,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         this.broker = broker;
         this.stockPool = stockPool;
         this.stockPricing = stockPricing;
-        // init object pool
+        // init object pool, 1000 for demo purpose
         IntStream.range(1, 1000).forEach(value -> quotePool.add(Quote.newBuilder()));
         //
     }
@@ -65,18 +66,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
                 int time = randomTime();
                 while (running) {
                     Set<String> pocket = stockPool.randoms();
-                    if (!pocket.isEmpty()) {
-                        for (String symbol : pocket) {
-                            // generate price
-                            Stock stock = stockPool.getLatestPrice(symbol);
-                            double price = stockPricing.price(stock, Duration.ofMillis(time));
-                            stockPool.updatePrice(symbol, price);
-                            wrapNewPrice(price, symbol);
-                        }
-                        //
-                        broker.publish(quoteBatchBuilder.build());
-                        quoteBatchBuilder.clear();
-                    }
+                    generatePublishPrice(pocket, time);
                     // sleep then continue generating latest price
                     time = randomTime();
                     try {
@@ -91,6 +81,31 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         thread.start();
     }
 
+    /**
+     *
+     * @param pocket
+     * @param time
+     */
+    public void generatePublishPrice(Set<String> pocket, int time) {
+        if (!pocket.isEmpty()) {
+            try {
+                for (String symbol : pocket) {
+                    // generate price
+                    Stock stock = stockPool.getLatestPrice(symbol);
+                    double price = stockPricing.price(stock, Duration.ofMillis(time));
+                    stockPool.updatePrice(symbol, price);
+                    wrapNewPrice(price, symbol);
+                }
+                //
+                broker.publish(quoteBatchBuilder.build());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            } finally {
+                quoteBatchBuilder.clear();
+            }
+        }
+    }
+
     private int randomTime() {
         return 1000 + random.nextInt(1500);
     }
@@ -100,7 +115,7 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
      * @param price
      * @param symbol
      */
-    public void wrapNewPrice(double price, String symbol) {
+    private void wrapNewPrice(double price, String symbol) {
         Quote.Builder builder = quotePool.poll();
         if (null == builder) {
             builder = Quote.newBuilder();
@@ -114,6 +129,23 @@ public class QuoteProducer implements InitializingBean, DisposableBean {
         } finally {
             builder.clear();
             quotePool.add(builder);
+        }
+    }
+
+    /**
+     * for testing
+     *
+     * @param symbol
+     * @param price
+     */
+    public void publishNewPrice(String symbol, double price) {
+        try {
+            wrapNewPrice(price, symbol);
+            broker.publish(quoteBatchBuilder.build());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            quoteBatchBuilder.clear();
         }
     }
 

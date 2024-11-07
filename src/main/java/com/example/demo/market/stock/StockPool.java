@@ -15,6 +15,7 @@ public class StockPool {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     // init on startup
     private final List<String> stocksSymbols = new ArrayList<>();
+    // tracking stock latest price
     private final Map<String, Stock> stockPrice = Maps.newConcurrentMap();
     private final Random random = new Random();
     //

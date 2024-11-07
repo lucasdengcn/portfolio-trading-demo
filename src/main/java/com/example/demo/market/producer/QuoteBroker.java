@@ -55,6 +55,11 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
         messages.clear();
     }
 
+    /**
+     * for testing
+     *
+     * @return
+     */
     public int dispatchMessage() {
         try {
             // wait until having income messages

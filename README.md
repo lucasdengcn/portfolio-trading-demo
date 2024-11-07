@@ -81,3 +81,24 @@ market:
   risk-free-interest-rate: 2 # for calculate option's price
 
 ```
+
+## Code Coverage
+
+![Code Coverage](code-coverage-report.png)
+
+## Format Code
+
+please ensure JAVA_HOME point to JDK 1.8.
+
+```shell
+./gradlew spotlessApply
+```
+
+## Build application with unit test
+
+please ensure JAVA_HOME point to JDK 1.8.
+
+```shell
+./gradlew build
+```
+

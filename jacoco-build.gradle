@@ -5,6 +5,14 @@ jacocoTestReport {
 		csv.required = false
 		html.required = true
 	}
+	afterEvaluate {
+		classDirectories = files(classDirectories.files.collect {
+			fileTree(dir: it,
+					excludes: [
+							'**/model/**'
+					])
+		})
+	}
 }
 
 // enforce 50% both at class and at project level for verifying tool setup
