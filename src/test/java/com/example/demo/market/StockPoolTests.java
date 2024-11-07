@@ -4,7 +4,6 @@ package com.example.demo.market;
 
 import com.example.demo.market.stock.StockPool;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -3,11 +3,9 @@
 package com.example.demo.market.stock;
 
 import com.example.demo.market.model.Stock;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.*;
-
 import com.google.common.collect.Sets;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

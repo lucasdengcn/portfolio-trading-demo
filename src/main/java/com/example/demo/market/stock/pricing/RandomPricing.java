@@ -3,7 +3,6 @@
 package com.example.demo.market.stock.pricing;
 
 import com.example.demo.market.model.Stock;
-
 import java.time.Duration;
 import java.util.Random;
 

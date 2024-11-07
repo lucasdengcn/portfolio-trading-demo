@@ -2,7 +2,6 @@
 
 package com.example.demo.market.producer;
 
-import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.QuoteBatch;
 import com.google.protobuf.ByteString;
 import java.util.ArrayList;
@@ -85,7 +84,7 @@ public class QuoteBroker implements InitializingBean, DisposableBean {
      * @param quoteBatch
      */
     public void publish(QuoteBatch quoteBatch) {
-        if (quoteBatch.getItemsList().isEmpty()){
+        if (quoteBatch.getItemsList().isEmpty()) {
             return;
         }
         messages.add(quoteBatch.toByteString());

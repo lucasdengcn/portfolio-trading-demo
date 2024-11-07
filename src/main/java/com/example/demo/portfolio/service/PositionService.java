@@ -13,15 +13,13 @@ import com.example.demo.portfolio.model.Portfolio;
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.model.SymbolType;
 import com.example.demo.portfolio.repository.PositionRepository;
-
+import com.google.common.collect.Lists;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -69,12 +67,16 @@ public class PositionService {
                         .setPrice(0.0f)
                         .build()));
         // init price, qty.
-        holdings.values().stream().filter(item -> item.getSymbolType().equals(SymbolType.STOCK))
+        holdings.values().stream()
+                .filter(item -> item.getSymbolType().equals(SymbolType.STOCK))
                 .forEach(new Consumer<Position>() {
                     @Override
                     public void accept(Position position) {
                         Stock price = stockPool.getLatestPrice(position.getSymbol());
-                        Quote quote = Quote.newBuilder().setPrice(price.getPrice()).setSymbol(position.getSymbol()).build();
+                        Quote quote = Quote.newBuilder()
+                                .setPrice(price.getPrice())
+                                .setSymbol(position.getSymbol())
+                                .build();
                         updateOnPriceChange(quote);
                     }
                 });
@@ -182,5 +184,4 @@ public class PositionService {
                 .setUpdateTime(System.currentTimeMillis())
                 .build();
     }
-
 }

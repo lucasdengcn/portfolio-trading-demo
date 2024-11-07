@@ -9,12 +9,11 @@ import com.example.demo.market.stock.StockPool;
 import com.example.demo.portfolio.service.PositionService;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 
 @Component
 public class QuoteConsumerImpl extends AbstractQuoteConsumerImpl {
@@ -41,13 +40,16 @@ public class QuoteConsumerImpl extends AbstractQuoteConsumerImpl {
         try {
             QuoteBatch stockQuotes = QuoteBatch.parseFrom(byteString);
             logger.info("receive stock quotes: {}", stockQuotes);
-            List<Boolean> collect = stockQuotes.getItemsList().stream().parallel().map(new Function<Quote, Boolean>() {
-                @Override
-                public Boolean apply(Quote quote) {
-                    positionService.updateOnPriceChange(quote);
-                    return true;
-                }
-            }).collect(Collectors.toList());
+            List<Boolean> collect = stockQuotes.getItemsList().stream()
+                    .parallel()
+                    .map(new Function<Quote, Boolean>() {
+                        @Override
+                        public Boolean apply(Quote quote) {
+                            positionService.updateOnPriceChange(quote);
+                            return true;
+                        }
+                    })
+                    .collect(Collectors.toList());
             logger.info("update position navs: {}, {}", stockQuotes, collect);
             applicationEventPublisher.publishEvent(stockQuotes);
         } catch (InvalidProtocolBufferException e) {

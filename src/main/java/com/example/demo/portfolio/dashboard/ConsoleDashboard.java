@@ -5,13 +5,11 @@ package com.example.demo.portfolio.dashboard;
 import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.QuoteBatch;
 import com.example.demo.portfolio.model.Portfolio;
-
-import java.text.DecimalFormat;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.service.PositionService;
 import com.google.common.base.Strings;
+import java.text.DecimalFormat;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -39,7 +37,10 @@ public class ConsoleDashboard {
         // head
         sw.append("## ").append(seq).append(" Market Data Update\n");
         for (Quote quote : quoteBatch.getItemsList()) {
-            sw.append(quote.getSymbol()).append(" change to ").append(decimalFormat.format(quote.getPrice())).append("\n");
+            sw.append(quote.getSymbol())
+                    .append(" change to ")
+                    .append(decimalFormat.format(quote.getPrice()))
+                    .append("\n");
         }
         // position list
         Portfolio portfolioDetail = positionService.getPortfolioDetail();
@@ -49,7 +50,8 @@ public class ConsoleDashboard {
         sw.append(formatSymbol("symbol")) // 40
                 .append(formatNumberCol("price")) // 20
                 .append(formatNumberCol("qty")) // 20
-                .append(formatNumberCol("value")).append("\n"); // 20
+                .append(formatNumberCol("value"))
+                .append("\n"); // 20
         for (Position position : portfolioDetail.getHoldingsList()) {
             sw.append(formatSymbol(position.getSymbol()))
                     .append(formatNumberCol(decimalFormat.format(position.getPrice())))
@@ -67,16 +69,15 @@ public class ConsoleDashboard {
         logger.info("total length: {}", sw.length());
     }
 
-    private String formatNumberCol(String text){
+    private String formatNumberCol(String text) {
         return Strings.padStart(text, 20, ' ');
     }
 
-    private String formatSymbol(String text){
+    private String formatSymbol(String text) {
         return Strings.padEnd(text, 40, ' ');
     }
 
-    public String formatNumeric(double value){
+    public String formatNumeric(double value) {
         return decimalFormat.format(value);
     }
-
 }
