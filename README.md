@@ -33,6 +33,19 @@ src/main/java/proto/*/market.proto
 src/main/java/proto/*/portfolio.proto
 ```
 
+## View Code on IDE
+
+* make sure pick JDK 1.8
+
+* import as Gradle project
+
+* trigger protobuf plugin to generate java classes, check out build tasks as following
+
+```shell
+./gradlew tasks
+./gradlew generateProto
+```
+
 ## How to run?
 
 * make sure JAVA_HOME point to JDK 1.8.

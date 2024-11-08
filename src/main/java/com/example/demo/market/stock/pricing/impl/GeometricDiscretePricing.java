@@ -4,6 +4,9 @@ package com.example.demo.market.stock.pricing.impl;
 
 import com.example.demo.market.model.Stock;
 import com.example.demo.market.stock.pricing.StockPricing;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.Random;
 import org.springframework.lang.NonNull;
@@ -32,6 +35,6 @@ public class GeometricDiscretePricing implements StockPricing {
         double delta = 1 + mu + drift;
         //
         double v = stock.getPrice() * delta;
-        return v;
+        return BigDecimal.valueOf(v).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 }
