@@ -138,3 +138,10 @@ please ensure JAVA_HOME point to JDK 1.8.
 ## Author
 
 lucas, yamingdeng@outlook.com
+
+## Outcome
+
+- Protobuf is good for messaging between systems given the super faster serialization and deserialization.
+- Pure POJO is good for Object Pooling to avoid NEW Object every time. would be nice for parsing input and output data.
+- ensure Object from Object Pool is immutable outside of pool.
+
