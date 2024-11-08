@@ -4,7 +4,6 @@ package com.example.demo.market.stock.pricing.impl;
 
 import com.example.demo.market.model.Stock;
 import com.example.demo.market.stock.pricing.StockPricing;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
