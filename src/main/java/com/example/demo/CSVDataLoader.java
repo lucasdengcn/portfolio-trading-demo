@@ -2,12 +2,12 @@
 
 package com.example.demo;
 
+import com.example.demo.common.model.SymbolType;
 import com.example.demo.market.model.Option;
 import com.example.demo.market.model.Stock;
 import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.stock.StockPool;
 import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.model.SymbolType;
 import com.example.demo.portfolio.service.PositionService;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -149,7 +149,7 @@ public class CSVDataLoader {
                         .setSymbol(temp[0])
                         .setStrikePrice(new BigDecimal(temp[1]).doubleValue())
                         .setMaturity(Integer.parseInt(temp[2]))
-                        .setSymbolType(Integer.parseInt(temp[3]))
+                        .setSymbolType(SymbolType.forNumber(Integer.parseInt(temp[3])))
                         .setStockSymbol(temp[4])
                         .build();
                 //

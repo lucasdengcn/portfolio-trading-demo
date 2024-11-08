@@ -1,17 +1,13 @@
 syntax = "proto3";
 
-package demo;
+package com.example.demo;
+
+import "google/protobuf/timestamp.proto";
+import "com/example/demo/common.proto";
 
 option java_multiple_files = true;
 option java_package = "com.example.demo.portfolio.model";
 option java_outer_classname = "PortfolioProto";
-
-enum SymbolType {
-    UNKNOWN = 0;
-    STOCK = 1;
-    CALL = 2;
-    PUT = 3;
-}
 
 message Position {
     int32 positionId = 1;
@@ -20,7 +16,7 @@ message Position {
     int32 qty = 4;
     double nav = 5;
     SymbolType symbolType = 6;
-    uint64 updateTime = 7;
+    google.protobuf.Timestamp updateTime = 7;
     string stockSymbol = 8;
 }
 
@@ -28,5 +24,5 @@ message Portfolio {
     int32 portfolioId = 1;
     double total = 2;
     repeated Position holdings = 3;
-    uint64 updateTime = 4;
+    google.protobuf.Timestamp updateTime = 4;
 }

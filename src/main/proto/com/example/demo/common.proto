@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.example.demo;
+
+option java_multiple_files = true;
+option java_package = "com.example.demo.common.model";
+option java_outer_classname = "CommonProto";
+
+enum SymbolType {
+    UNKNOWN = 0;
+    STOCK = 1;
+    CALL = 2;
+    PUT = 3;
+}

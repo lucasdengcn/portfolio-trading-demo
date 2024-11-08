@@ -1,6 +1,9 @@
 syntax = "proto3";
 
-package demo;
+package com.example.demo;
+
+import "google/protobuf/timestamp.proto";
+import "com/example/demo/common.proto";
 
 option java_multiple_files = true;
 option java_package = "com.example.demo.market.model";
@@ -20,12 +23,14 @@ message Stock {
     double price = 2;
     double expectedReturn = 3;
     double deviation = 4;
+    google.protobuf.Timestamp lastUpdated = 5;
 }
 
 message Option {
     string symbol = 1;
     double strikePrice = 2;
     int32 maturity = 3;
-    int32 symbolType = 4;
+    SymbolType symbolType = 4;
     string stockSymbol = 5;
+    google.protobuf.Timestamp lastUpdated = 6;
 }

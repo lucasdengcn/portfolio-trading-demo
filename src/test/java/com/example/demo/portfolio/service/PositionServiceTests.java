@@ -2,6 +2,7 @@
 
 package com.example.demo.portfolio.service;
 
+import com.example.demo.common.model.SymbolType;
 import com.example.demo.market.model.Option;
 import com.example.demo.market.model.Quote;
 import com.example.demo.market.model.Stock;
@@ -9,7 +10,6 @@ import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.stock.StockPool;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.model.Position;
-import com.example.demo.portfolio.model.SymbolType;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -50,14 +50,14 @@ class PositionServiceTests {
         Option option = Option.newBuilder()
                 .setSymbol("A-100-C")
                 .setMaturity(1)
-                .setSymbolType(SymbolType.CALL_VALUE)
+                .setSymbolType(SymbolType.CALL)
                 .setStrikePrice(80.0f)
                 .build();
         optionManager.register(option);
         option = Option.newBuilder()
                 .setSymbol("A-100-P")
                 .setMaturity(1)
-                .setSymbolType(SymbolType.PUT_VALUE)
+                .setSymbolType(SymbolType.PUT)
                 .setStrikePrice(105.0f)
                 .build();
         optionManager.register(option);

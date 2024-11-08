@@ -1,3 +1,5 @@
+/* lucas, yamingdeng@outlook.com (C) 2024 */ 
+
 package com.example.demo.market.entity;
 
 import org.springframework.data.annotation.Id;

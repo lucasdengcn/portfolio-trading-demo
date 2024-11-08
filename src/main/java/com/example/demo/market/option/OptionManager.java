@@ -2,11 +2,11 @@
 
 package com.example.demo.market.option;
 
+import com.example.demo.common.model.SymbolType;
 import com.example.demo.market.model.Option;
 import com.example.demo.market.option.pricing.OptionPricing;
 import com.example.demo.market.option.pricing.impl.CallOptionPricing;
 import com.example.demo.market.option.pricing.impl.PutOptionPricing;
-import com.example.demo.portfolio.model.SymbolType;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
