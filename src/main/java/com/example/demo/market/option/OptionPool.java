@@ -2,7 +2,7 @@
 
 package com.example.demo.market.option;
 
-import com.example.demo.market.model.Option;
+import com.example.demo.model.Option;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.lang.NonNull;
 

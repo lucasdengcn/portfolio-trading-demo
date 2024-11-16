@@ -2,7 +2,7 @@
 
 package com.example.demo.market.stock;
 
-import com.example.demo.market.model.Stock;
+import com.example.demo.model.Stock;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.*;
@@ -32,8 +32,8 @@ public class StockPool {
 
     public void updatePrice(@NonNull String symbol, double price) {
         Stock stock = stockPrice.get(symbol);
-        Stock build = stock.toBuilder().setPrice(price).build();
-        stockPrice.put(symbol, build);
+        stock.setPrice(price);
+        stockPrice.put(symbol, stock);
     }
 
     public Stock getLatestPrice(@NonNull String symbol) {

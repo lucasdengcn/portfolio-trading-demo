@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "com/example/demo/common.proto";
 
 option java_multiple_files = true;
-option java_package = "com.example.demo.market.model";
+option java_package = "com.example.demo.messaging.model";
 option java_outer_classname = "MarketProto";
 
 message Quote {

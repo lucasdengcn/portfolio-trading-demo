@@ -2,18 +2,19 @@
 
 package com.example.demo.portfolio.repository;
 
+import com.example.demo.model.SymbolType;
 import com.example.demo.portfolio.entity.PositionEntity;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PositionRepository extends CrudRepository<PositionEntity, Long> {
+public interface PositionRepository extends JpaRepository<PositionEntity, Long> {
 
     Optional<PositionEntity> findBySymbol(String symbol);
 
-    int countBySymbolType(int symbolType);
+    int countBySymbolType(SymbolType symbolType);
 
-    List<PositionEntity> findBySymbolType(int symbolType);
+    List<PositionEntity> findBySymbolType(SymbolType symbolType);
 }

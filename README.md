@@ -18,6 +18,13 @@ This is a demo application.
 - Jacoco (for code coverage)
 - Spotless (for code formatting)
 
+## Module
+- broker
+- market
+- math
+- portfolio
+- pricing
+
 ## Schema Design
 
 ### Database Schema
@@ -66,10 +73,10 @@ if want to change the file content, please make sure following the csv headers.
 cat csv/sample-options.csv
 
 symbol,strikePrice,maturity(years),symbolType,stockSymbol
-AAPL-OCT-2020-110-C,200,1,2,AAPL
-AAPL-OCT-2020-110-P,400,1,3,AAPL
-TELSA-NOV-2020-400-C,180,1,2,TELSA
-TELSA-DEC-2020-400-P,260,1,3,TELSA
+AAPL-OCT-2020-110-C,200,1,CALL,AAPL
+AAPL-OCT-2020-110-P,400,1,PUT,AAPL
+TELSA-NOV-2020-400-C,180,1,CALL,TELSA
+TELSA-DEC-2020-400-P,260,1,PUT,TELSA
 
 ```
 
@@ -134,10 +141,6 @@ please ensure JAVA_HOME point to JDK 1.8.
 ```shell
 ./gradlew build
 ```
-
-## Author
-
-lucas, yamingdeng@outlook.com
 
 ## Outcome
 

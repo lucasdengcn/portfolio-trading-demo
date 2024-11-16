@@ -2,6 +2,7 @@
 
 package com.example.demo;
 
+import com.example.demo.loader.CSVDataLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

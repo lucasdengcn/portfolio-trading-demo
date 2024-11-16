@@ -2,23 +2,17 @@
 
 package com.example.demo.portfolio.service;
 
-import com.example.demo.common.model.SymbolType;
-import com.example.demo.market.model.Option;
-import com.example.demo.market.model.Quote;
-import com.example.demo.market.model.Stock;
 import com.example.demo.market.option.OptionManager;
-import com.example.demo.market.option.pricing.OptionPricing;
 import com.example.demo.market.stock.StockPool;
+import com.example.demo.messaging.model.Quote;
+import com.example.demo.model.*;
 import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.model.Portfolio;
-import com.example.demo.portfolio.model.Position;
 import com.example.demo.portfolio.repository.PositionRepository;
+import com.example.demo.pricing.option.OptionPricing;
 import com.google.common.collect.Lists;
-import com.google.protobuf.Timestamp;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -61,14 +55,14 @@ public class PositionService {
         //
         positionEntities.forEach(item -> holdings.put(
                 item.getSymbol(),
-                Position.newBuilder()
-                        .setPositionId(item.getId())
-                        .setSymbol(item.getSymbol())
-                        .setQty(item.getPositionSize())
-                        .setSymbolType(SymbolType.forNumber(item.getSymbolType()))
-                        .setStockSymbol(item.getRelStockSymbol())
-                        .setNav(0.0f)
-                        .setPrice(0.0f)
+                Position.builder()
+                        .positionId(item.getId())
+                        .symbol(item.getSymbol())
+                        .qty(item.getPositionSize())
+                        .symbolType(item.getSymbolType())
+                        .stockSymbol(item.getRelStockSymbol())
+                        .nav(0.0f)
+                        .price(0.0f)
                         .build()));
         // init price, qty.
         holdings.values().stream()
@@ -154,21 +148,16 @@ public class PositionService {
      */
     private Position updateNavOnSymbol(@NonNull Position position, double price) {
         //
-        BigDecimal v1 = BigDecimal.valueOf(price).setScale(2, RoundingMode.DOWN);
-        BigDecimal v2 = BigDecimal.valueOf(position.getQty());
+        BigDecimal priceScale = BigDecimal.valueOf(price).setScale(2, RoundingMode.DOWN);
+        BigDecimal qtyScale = BigDecimal.valueOf(position.getQty());
         //
-        BigDecimal v3 = v1.multiply(v2).setScale(2, RoundingMode.DOWN);
-        Timestamp updateTime = Timestamp.newBuilder()
-                .setSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
-                .build();
-        Position positionUpdated = position.toBuilder()
-                .setPrice(v1.doubleValue())
-                .setNav(v3.doubleValue())
-                .setUpdateTime(updateTime)
-                .build();
-        holdings.put(position.getSymbol(), positionUpdated);
-        logger.debug("update {} position nav. {}", position.getSymbol(), positionUpdated);
-        return positionUpdated;
+        BigDecimal navScale = priceScale.multiply(qtyScale).setScale(2, RoundingMode.DOWN);
+        position.setPrice(priceScale.doubleValue());
+        position.setNav(navScale.doubleValue());
+        position.setUpdateTime(LocalDateTime.now());
+        holdings.put(position.getSymbol(), position);
+        logger.debug("update {} position nav. {}", position.getSymbol(), position);
+        return position;
     }
 
     public Position findBySymbol(String symbol) {
@@ -185,13 +174,10 @@ public class PositionService {
         //
         positions.sort(Comparator.comparing(Position::getSymbol));
         //
-        Timestamp updateTime = Timestamp.newBuilder()
-                .setSeconds(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
-                .build();
-        return Portfolio.newBuilder()
-                .setTotal(sumOfNav)
-                .addAllHoldings(positions)
-                .setUpdateTime(updateTime)
+        return Portfolio.builder()
+                .totalNav(sumOfNav)
+                .holdings(positions)
+                .updateTime(LocalDateTime.now())
                 .build();
     }
 }

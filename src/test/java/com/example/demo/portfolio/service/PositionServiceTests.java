@@ -2,14 +2,14 @@
 
 package com.example.demo.portfolio.service;
 
-import com.example.demo.common.model.SymbolType;
-import com.example.demo.market.model.Option;
-import com.example.demo.market.model.Quote;
-import com.example.demo.market.model.Stock;
 import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.stock.StockPool;
+import com.example.demo.messaging.model.Quote;
+import com.example.demo.model.Option;
+import com.example.demo.model.Position;
+import com.example.demo.model.Stock;
+import com.example.demo.model.SymbolType;
 import com.example.demo.portfolio.entity.PositionEntity;
-import com.example.demo.portfolio.model.Position;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -40,31 +40,31 @@ class PositionServiceTests {
 
     @Test
     void save_positions() {
-        Stock stock = Stock.newBuilder()
-                .setSymbol("A")
-                .setExpectedReturn(110.0f)
-                .setDeviation(0.12)
+        Stock stock = Stock.builder()
+                .symbol("A")
+                .expectedReturn(110.0f)
+                .deviation(0.12)
                 .build();
         stockPool.registerPrice(stock);
         //
-        Option option = Option.newBuilder()
-                .setSymbol("A-100-C")
-                .setMaturity(1)
-                .setSymbolType(SymbolType.CALL)
-                .setStrikePrice(80.0f)
+        Option option = Option.builder()
+                .symbol("A-100-C")
+                .maturity(1)
+                .symbolType(SymbolType.CALL)
+                .strikePrice(80.0f)
                 .build();
         optionManager.register(option);
-        option = Option.newBuilder()
-                .setSymbol("A-100-P")
-                .setMaturity(1)
-                .setSymbolType(SymbolType.PUT)
-                .setStrikePrice(105.0f)
+        option = Option.builder()
+                .symbol("A-100-P")
+                .maturity(1)
+                .symbolType(SymbolType.PUT)
+                .strikePrice(105.0f)
                 .build();
         optionManager.register(option);
         //
-        PositionEntity positionEntity = new PositionEntity("A", 1, SymbolType.STOCK_VALUE, "");
-        PositionEntity positionEntity2 = new PositionEntity("A-100-P", -1, SymbolType.PUT_VALUE, "A");
-        PositionEntity positionEntity3 = new PositionEntity("A-100-C", 1, SymbolType.CALL_VALUE, "A");
+        PositionEntity positionEntity = new PositionEntity("A", 1, SymbolType.STOCK, "");
+        PositionEntity positionEntity2 = new PositionEntity("A-100-P", -1, SymbolType.PUT, "A");
+        PositionEntity positionEntity3 = new PositionEntity("A-100-C", 1, SymbolType.CALL, "A");
         positionService.save(Lists.newArrayList(positionEntity, positionEntity2, positionEntity3));
         //
         Assertions.assertEquals(3, positionService.count());
@@ -85,7 +85,7 @@ class PositionServiceTests {
 
     @Test
     void test_sum_of_nav() {
-        Position position = Position.newBuilder().setNav(1.0f).build();
+        Position position = Position.builder().nav(1.0f).build();
         List<Position> positionList = Lists.newArrayList(position, position, position);
         double sumOfNav = positionService.getSumOfNav(positionList);
         Assertions.assertEquals(3.0f, sumOfNav);

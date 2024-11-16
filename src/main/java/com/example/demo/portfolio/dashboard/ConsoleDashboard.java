@@ -2,10 +2,10 @@
 
 package com.example.demo.portfolio.dashboard;
 
-import com.example.demo.market.model.Quote;
-import com.example.demo.market.model.QuoteBatch;
-import com.example.demo.portfolio.model.Portfolio;
-import com.example.demo.portfolio.model.Position;
+import com.example.demo.messaging.model.Quote;
+import com.example.demo.messaging.model.QuoteBatch;
+import com.example.demo.model.Portfolio;
+import com.example.demo.model.Position;
 import com.example.demo.portfolio.service.PositionService;
 import com.google.common.base.Strings;
 import java.text.DecimalFormat;
@@ -53,7 +53,7 @@ public class ConsoleDashboard {
                 .append(formatNumberCol("qty")) // 20
                 .append(formatNumberCol("value"))
                 .append("\n"); // 20
-        for (Position position : portfolioDetail.getHoldingsList()) {
+        for (Position position : portfolioDetail.getHoldings()) {
             sw.append(formatSymbol(position.getSymbol()))
                     .append(formatNumberCol(decimalFormat.format(position.getPrice())))
                     .append(formatNumberCol(decimalFormat.format(position.getQty())))
@@ -62,7 +62,7 @@ public class ConsoleDashboard {
         }
         // footer
         int totalWidth = 100;
-        String string = decimalFormat.format(portfolioDetail.getTotal());
+        String string = decimalFormat.format(portfolioDetail.getTotalNav());
         String title = "## Total portfolio";
         sw.append("\n").append(title).append(Strings.padStart(string, totalWidth - title.length(), ' '));
         sw.append("\n\n");

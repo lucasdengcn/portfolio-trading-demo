@@ -1,0 +1,62 @@
+/* lucas, yamingdeng@outlook.com (C) 2024 */ 
+
+package com.example.demo.borker;
+
+import com.example.demo.broker.DataBroker;
+import com.example.demo.messaging.model.Quote;
+import com.example.demo.messaging.model.QuoteBatch;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@ActiveProfiles("test")
+class DataBrokerTests {
+
+    @Autowired
+    DataBroker broker;
+
+    @BeforeEach
+    void setup() {
+        broker.clear();
+    }
+
+    @Test
+    void test_on_empty_queue() {
+        int result = broker.dispatchMessage();
+        Assertions.assertEquals(0, result);
+    }
+
+    @Test
+    void test_on_non_empty_queue() {
+        //
+        Quote quote = Quote.newBuilder().setSymbol("A").setPrice(1.0f).build();
+        broker.publish(QuoteBatch.newBuilder().addItems(quote).build());
+        //
+        int result = broker.dispatchMessage();
+        Assertions.assertEquals(1, result);
+    }
+
+    @Test
+    void test_on_stock_price_queue() {
+        //
+        Quote quote = Quote.newBuilder().setSymbol("AAPL").setPrice(1.0f).build();
+        broker.publish(QuoteBatch.newBuilder().addItems(quote).build());
+        //
+        int result = broker.dispatchMessage();
+        Assertions.assertEquals(1, result);
+    }
+
+    @Test
+    void test_publish_null_message() {
+        broker.publish(null);
+    }
+
+    @Test
+    void test_publish_empty_message() {
+        broker.publish(QuoteBatch.newBuilder().build());
+    }
+}
