@@ -1,13 +1,14 @@
 # Portfolio Trading Demo
 
-This is a demo application.
+This is a demo application. showing simulation on ticker data generation, refresh stock price, option price in real time,
+and update portfolio NAV in real time.
 
 ## Tech Stack
 
 - JDK 21
 - Spring Boot 3.3.4
 - H2 2.1.214
-- Gradle
+- Gradle 8.1+
 - Protobuf 4.28.3
 - Guava 33.3.1-jre
 - JUnit 5.8.2
