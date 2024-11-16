@@ -43,7 +43,7 @@ src/main/java/proto/*/portfolio.proto
 
 ## View Code on IDE
 
-* make sure pick JDK 1.8
+* make sure pick JDK 21
 
 * import as Gradle project
 
@@ -56,7 +56,7 @@ src/main/java/proto/*/portfolio.proto
 
 ## How to run?
 
-* make sure JAVA_HOME point to JDK 1.8.
+* make sure JAVA_HOME point to JDK 21.
 
 * make sure at the project root directory, and run following command in shell.
 
@@ -110,16 +110,21 @@ to demo this application, also having follow configuration prepared.
 ```yaml
 
 app:
-  portfolio-relative-path: csv/sample-portfolio.csv # relative file path to project root directory
-  stock-relative-path: csv/sample-stock.csv # relative file path to project root directory
-  option-relative-path: csv/sample-options.csv # relative file path to project root directory
+  data:
+    csv:
+      portfolio: csv/sample-portfolio.csv
+      stock: csv/sample-stock.csv
+      option: csv/sample-options.csv
+  broker:
+    dispatcher:
+      enabled: true
+      timeout: 10
+  ticker:
+    producer:
+      enabled: true
+  market:
+    risk-free-interest-rate: 2
 
-market:
-  quote-producer-thread.enabled: true
-  broker-dispatch-thread:
-    enabled: true
-    timeout: 10
-  risk-free-interest-rate: 2 # for calculate option's price
 
 ```
 
@@ -129,7 +134,7 @@ market:
 
 ## Format Code
 
-please ensure JAVA_HOME point to JDK 1.8.
+please ensure JAVA_HOME point to JDK 21.
 
 ```shell
 ./gradlew spotlessApply
@@ -137,7 +142,7 @@ please ensure JAVA_HOME point to JDK 1.8.
 
 ## Build application with unit test
 
-please ensure JAVA_HOME point to JDK 1.8.
+please ensure JAVA_HOME point to JDK 21.
 
 ```shell
 ./gradlew build
