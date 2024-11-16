@@ -12,6 +12,9 @@ public class CallOptionPricing implements OptionPricing {
     private final double riskFreeInterestRate;
 
     public CallOptionPricing(double riskFreeInterestRate) {
+        if (riskFreeInterestRate <= 0){
+            throw new IllegalArgumentException("r should be larger than 0");
+        }
         this.riskFreeInterestRate = riskFreeInterestRate;
     }
 
@@ -19,8 +22,11 @@ public class CallOptionPricing implements OptionPricing {
     public double price(@NonNull Stock stock, @NonNull double stockPrice, @NonNull Option option) {
         //
         double strikePrice = option.getStrikePrice();
-        double r = this.riskFreeInterestRate;
         int maturity = option.getMaturity();
+        if (strikePrice <= 0 || maturity <= 0){
+            throw new IllegalArgumentException("strikePrice or maturity should be larger than 0");
+        }
+        double r = this.riskFreeInterestRate;
         double sigma = stock.getDeviation();
         //
         double d1 = (Math.log(stockPrice / strikePrice) + (r + Math.pow(sigma, 2) / 2) * maturity)

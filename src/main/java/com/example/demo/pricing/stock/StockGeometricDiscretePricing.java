@@ -14,7 +14,7 @@ import org.springframework.lang.NonNull;
  */
 public class StockGeometricDiscretePricing implements StockPricing {
 
-    Random random = new Random();
+    private final Random random = new Random();
 
     public double price(@NonNull Stock stock, @NonNull Duration duration) {
         if (null == stock || null == duration) {

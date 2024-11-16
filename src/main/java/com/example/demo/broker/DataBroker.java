@@ -109,6 +109,7 @@ public class DataBroker implements InitializingBean, DisposableBean {
         if (null == newTick || StringUtils.isEmpty(newTick.getSymbol())) {
             return false;
         }
+        // utilize object pool to reuse object to avoid GC times
         try (Pooled<Ticker> pooled = tickerObjectPool.borrowObject()) {
             Ticker ticker = pooled.object;
             ticker.setSymbol(newTick.getSymbol());
