@@ -13,30 +13,50 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StockPool {
+    /**
+     *
+     */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    // init on startup
+    /**
+     *
+     */
     private final List<String> stocksSymbols = new ArrayList<>();
-    // tracking stock latest price
+    /**
+     *
+     */
     private final Map<String, Stock> stockPrice = Maps.newConcurrentMap();
+    /**
+     *
+     */
     private final Random random = new Random();
-    //
-    public void register(@NonNull String symbol) {
-        if (this.stocksSymbols.contains(symbol)) return;
-        this.stocksSymbols.add(symbol);
-    }
 
+    /**
+     *
+     * @param stock
+     */
     public void registerPrice(@NonNull Stock stock) {
         stockPrice.put(stock.getSymbol(), stock);
-        register(stock.getSymbol());
+        if (this.stocksSymbols.contains(stock.getSymbol())) return;
+        this.stocksSymbols.add(stock.getSymbol());
     }
 
+    /**
+     *
+     * @param symbol
+     * @param price
+     */
     public void updatePrice(@NonNull String symbol, double price) {
         Stock stock = stockPrice.get(symbol);
         stock.setPrice(price);
         stockPrice.put(symbol, stock);
     }
 
-    public Stock getLatestPrice(@NonNull String symbol) {
+    /**
+     *
+     * @param symbol
+     * @return
+     */
+    public Stock getOne(@NonNull String symbol) {
         return stockPrice.get(symbol);
     }
 

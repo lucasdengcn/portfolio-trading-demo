@@ -3,7 +3,7 @@
 package com.example.demo.portfolio.consumer;
 
 import com.example.demo.broker.TickerConsumer;
-import com.google.protobuf.ByteString;
+import com.example.demo.model.Ticker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -14,12 +14,12 @@ public abstract class AbstractTickerConsumerImpl implements TickerConsumer, Init
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public abstract void handle(@NonNull ByteString byteString) throws Exception;
+    public abstract void handle(@NonNull Ticker ticker) throws Exception;
 
     @Override
-    public void onEvent(@NonNull ByteString byteString) {
+    public void onEvent(@NonNull Ticker ticker) {
         try {
-            handle(byteString);
+            handle(ticker);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

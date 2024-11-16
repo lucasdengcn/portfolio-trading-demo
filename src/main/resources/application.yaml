@@ -7,6 +7,9 @@ logging:
   file: app.log
   level:
     root: INFO
+    org.hibernate: INFO
+    org.hibernate.stat: INFO
+    org.hibernate.SQL: INFO
     org.springframework: INFO
     com.example.demo: DEBUG
     org:
@@ -16,21 +19,25 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:portfolio.db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_RECONNECT=TRUE;MODE=PostgreSQL;
+    url: jdbc:h2:mem:portfolio.db;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_RECONNECT=TRUE;MODE=PostgreSQL;
     username: sa
     password: potfolio-trading-demo
     driverClassName: org.h2.Driver
   sql:
     init:
-      mode: embedded
+      mode: always
   profiles:
     active: dev
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
+    hibernate:
+      ddl-auto: none
     properties:
       hibernate:
         generate_statistics: true
+        format_sql: true
+        globally_quoted_identifiers: false
         jdbc:
           batch_size: 10
           batch_versioned_data: true
@@ -41,14 +48,19 @@ spring.h2:
   console.enabled: true
 
 app:
-  portfolio-relative-path: csv/sample-portfolio.csv
-  stock-relative-path: csv/sample-stock.csv
-  option-relative-path: csv/sample-options.csv
+  data:
+    csv:
+      portfolio: csv/sample-portfolio.csv
+      stock: csv/sample-stock.csv
+      option: csv/sample-options.csv
+  broker:
+    dispatcher:
+      enabled: true
+      timeout: 10
+  ticker:
+    producer:
+      enabled: true
+  market:
+    risk-free-interest-rate: 2
 
-market:
-  quote-producer-thread.enabled: true
-  broker-dispatch-thread:
-    enabled: true
-    timeout: 10
-  risk-free-interest-rate: 2
 

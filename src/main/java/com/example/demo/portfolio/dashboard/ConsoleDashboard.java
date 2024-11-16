@@ -2,10 +2,10 @@
 
 package com.example.demo.portfolio.dashboard;
 
-import com.example.demo.messaging.model.Quote;
-import com.example.demo.messaging.model.QuoteBatch;
+import com.example.demo.market.stock.StockPool;
 import com.example.demo.model.Portfolio;
 import com.example.demo.model.Position;
+import com.example.demo.model.Stock;
 import com.example.demo.portfolio.service.PositionService;
 import com.google.common.base.Strings;
 import java.text.DecimalFormat;
@@ -23,26 +23,34 @@ public class ConsoleDashboard {
 
     private final AtomicInteger counting = new AtomicInteger(0);
     private final PositionService positionService;
+    private final StockPool stockPool;
+    /**
+     *
+     */
     private final DecimalFormat decimalFormat = new DecimalFormat("###,###,###.00");
 
-    public ConsoleDashboard(PositionService positionService) {
+    public ConsoleDashboard(PositionService positionService, StockPool stockPool) {
         this.positionService = positionService;
+        this.stockPool = stockPool;
     }
 
     @EventListener
-    public synchronized void updateOnStockPriceChange(@NonNull QuoteBatch quoteBatch) {
-        logger.debug("receive updates: {}", quoteBatch);
+    public synchronized void updateOnStockPriceChange(@NonNull String symbol) {
+        logger.debug("receive updates: {}", symbol);
+        //
+        Stock stock = stockPool.getOne(symbol);
+        if (null == stock) {
+            return;
+        }
         //
         int seq = counting.incrementAndGet();
         StringBuilder sw = new StringBuilder(2000);
         // head
         sw.append("## ").append(seq).append(" Market Data Update\n");
-        for (Quote quote : quoteBatch.getItemsList()) {
-            sw.append(quote.getSymbol())
-                    .append(" change to ")
-                    .append(decimalFormat.format(quote.getPrice()))
-                    .append("\n");
-        }
+        sw.append(stock.getSymbol())
+                .append(" change to ")
+                .append(decimalFormat.format(stock.getPrice()))
+                .append("\n");
         // position list
         Portfolio portfolioDetail = positionService.getPortfolioDetail();
         sw.append("\n");

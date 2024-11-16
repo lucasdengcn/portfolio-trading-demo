@@ -4,15 +4,12 @@ package com.example.demo.market.ticker;
 
 import com.example.demo.broker.DataBroker;
 import com.example.demo.market.stock.StockPool;
-import com.example.demo.messaging.model.Quote;
-import com.example.demo.messaging.model.QuoteBatch;
 import com.example.demo.model.Stock;
+import com.example.demo.model.Ticker;
 import com.example.demo.pricing.stock.StockPricing;
 import java.time.Duration;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -20,27 +17,27 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import stormpot.Pooled;
 
 @Component
 public class TickerProducer implements InitializingBean, DisposableBean {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /**
-     * simulate event-driven broker
-     */
     private final DataBroker broker;
-
     private final StockPool stockPool;
     private final StockPricing stockPricing;
+    private final TickerObjectPool tickerObjectPool;
+    /**
+     *
+     */
     private volatile boolean running = false;
+
     private final Random random = new Random();
-    // object pooling
-    private final ConcurrentLinkedQueue<Quote.Builder> quotePool = new ConcurrentLinkedQueue<>();
-    // if running in multiple instance, would need to corresponding instance
-    private final QuoteBatch.Builder quoteBatchBuilder = QuoteBatch.newBuilder();
-    //
-    @Value("${market.quote-producer-thread.enabled:false}")
+    /**
+     *
+     */
+    @Value("${app.ticker.producer.enabled:false}")
     private boolean enabled;
 
     /**
@@ -51,9 +48,7 @@ public class TickerProducer implements InitializingBean, DisposableBean {
         this.broker = broker;
         this.stockPool = stockPool;
         this.stockPricing = stockPricing;
-        // init object pool, 1000 for demo purpose
-        IntStream.range(1, 1000).forEach(value -> quotePool.add(Quote.newBuilder()));
-        //
+        this.tickerObjectPool = new TickerObjectPool(10);
     }
 
     /**
@@ -65,14 +60,14 @@ public class TickerProducer implements InitializingBean, DisposableBean {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                int time = randomTime();
+                int timeInMs = randomTimeInMs();
                 while (running) {
-                    Set<String> pocket = stockPool.randoms();
-                    generatePublishPrice(pocket, time);
+                    Set<String> symbols = stockPool.randoms();
+                    publishNewPricesInTime(symbols, timeInMs);
                     // sleep then continue generating latest price
-                    time = randomTime();
+                    timeInMs = randomTimeInMs();
                     try {
-                        Thread.sleep(time);
+                        Thread.sleep(timeInMs);
                     } catch (InterruptedException e) {
                         break;
                     }
@@ -85,31 +80,29 @@ public class TickerProducer implements InitializingBean, DisposableBean {
 
     /**
      *
-     * @param pocket
+     * @param symbols
      * @param time
      */
-    public void generatePublishPrice(@NonNull Set<String> pocket, int time) {
-        if (null != pocket && !pocket.isEmpty()) {
+    public void publishNewPricesInTime(@NonNull Set<String> symbols, int time) {
+        if (!symbols.isEmpty()) {
             try {
-                for (String symbol : pocket) {
+                for (String symbol : symbols) {
                     // generate price
-                    Stock stock = stockPool.getLatestPrice(symbol);
+                    Stock stock = stockPool.getOne(symbol);
                     double price = stockPricing.price(stock, Duration.ofMillis(time));
                     stockPool.updatePrice(symbol, price);
-                    wrapNewPrice(price, symbol);
+                    //
+                    this.publishNewPrice(symbol, price);
+                    //
                 }
-                //
-                broker.publish(quoteBatchBuilder.build());
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-            } finally {
-                quoteBatchBuilder.clear();
             }
         }
     }
 
-    private int randomTime() {
-        return 1000 + random.nextInt(1500);
+    private int randomTimeInMs() {
+        return 500 + random.nextInt(1500);
     }
 
     /**
@@ -117,44 +110,20 @@ public class TickerProducer implements InitializingBean, DisposableBean {
      * @param price
      * @param symbol
      */
-    private void wrapNewPrice(double price, String symbol) {
-        Quote.Builder builder = quotePool.poll();
-        if (null == builder) {
-            builder = Quote.newBuilder();
-        }
-        try {
-            // quote is immutable object, it is thread-safe
-            Quote quote = builder.setPrice(price).setSymbol(symbol).build();
-            quoteBatchBuilder.addItems(quote);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            builder.clear();
-            quotePool.add(builder);
-        }
-    }
-
-    /**
-     * for testing
-     *
-     * @param symbol
-     * @param price
-     */
-    public void publishNewPrice(@NonNull String symbol, double price) {
-        try {
-            wrapNewPrice(price, symbol);
-            broker.publish(quoteBatchBuilder.build());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            quoteBatchBuilder.clear();
+    public void publishNewPrice(String symbol, double price) {
+        try (Pooled<Ticker> pooled = tickerObjectPool.borrowObject()) {
+            Ticker ticker = pooled.object;
+            ticker.setSymbol(symbol);
+            ticker.setPrice(price);
+            ticker.setVolume(1);
+            this.broker.publish(ticker);
         }
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         if (enabled) {
-            logger.info("QuoteProducer running");
+            logger.info("TickerProducer running");
             start();
         }
     }
@@ -162,6 +131,6 @@ public class TickerProducer implements InitializingBean, DisposableBean {
     @Override
     public void destroy() throws Exception {
         running = false;
-        logger.info("QuoteProducer Stopping");
+        logger.info("TickerProducer Stopping");
     }
 }

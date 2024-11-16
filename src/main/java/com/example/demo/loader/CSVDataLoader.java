@@ -29,13 +29,13 @@ public class CSVDataLoader {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${app.portfolio-relative-path}")
+    @Value("${app.data.csv.portfolio}")
     private String portfolioFilePath;
 
-    @Value("${app.stock-relative-path}")
+    @Value("${app.data.csv.stock}")
     private String stockFilePath;
 
-    @Value("${app.option-relative-path}")
+    @Value("${app.data.csv.option}")
     private String optionFilePath;
 
     @Autowired

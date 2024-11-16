@@ -4,7 +4,6 @@ package com.example.demo.portfolio.service;
 
 import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.stock.StockPool;
-import com.example.demo.messaging.model.Quote;
 import com.example.demo.model.*;
 import com.example.demo.portfolio.entity.PositionEntity;
 import com.example.demo.portfolio.repository.PositionRepository;
@@ -70,12 +69,8 @@ public class PositionService {
                 .forEach(new Consumer<Position>() {
                     @Override
                     public void accept(Position position) {
-                        Stock price = stockPool.getLatestPrice(position.getSymbol());
-                        Quote quote = Quote.newBuilder()
-                                .setPrice(price.getPrice())
-                                .setSymbol(position.getSymbol())
-                                .build();
-                        updateOnPriceChange(quote);
+                        Stock stock = stockPool.getOne(position.getSymbol());
+                        updateNavOnPriceChange(stock.getSymbol(), stock.getPrice());
                     }
                 });
     }
@@ -86,12 +81,11 @@ public class PositionService {
     }
 
     /**
-     * @param stockQuote
+     *
+     * @param symbol
+     * @param price
      */
-    public void updateOnPriceChange(@NonNull Quote stockQuote) {
-        String symbol = stockQuote.getSymbol();
-        double price = stockQuote.getPrice();
-        //
+    public void updateNavOnPriceChange(@NonNull String symbol, double price) {
         Position stockPosition = holdings.get(symbol);
         if (null == stockPosition) {
             return;
@@ -106,37 +100,33 @@ public class PositionService {
                 .parallel()
                 .map(stringPositionEntry -> {
                     Position position = stringPositionEntry.getValue();
-                    if (SymbolType.PUT.equals(position.getSymbolType())) {
-                        return updateOptionNav(stockQuote, position);
-                    } else if (SymbolType.CALL.equals(position.getSymbolType())) {
-                        return updateOptionNav(stockQuote, position);
-                    }
-                    return position;
+                    return updateOptionNav(symbol, price, position);
                 })
                 .collect(Collectors.toList());
     }
 
-    public double getSumOfNav(@NonNull Collection<Position> positions) {
+    public double calculatePositionNav(@NonNull Collection<Position> positions) {
         return positions.stream().map(Position::getNav).reduce(0.0d, Double::sum);
     }
 
     /**
      * for testing
      *
-     * @param quote
+     * @param symbol
+     * @param newPrice
      * @param position
      * @return
      */
-    public Position updateOptionNav(@NonNull Quote quote, @NonNull Position position) {
+    public Position updateOptionNav(@NonNull String symbol, double newPrice, @NonNull Position position) {
         OptionPricing optionPricing = optionManager.getPricing(position.getSymbolType());
         if (null == optionPricing) {
             logger.info("Option Pricing NOT FOUND. {}", position.getSymbolType());
             return position;
         }
-        Stock stock = stockPool.getLatestPrice(quote.getSymbol());
+        Stock stock = stockPool.getOne(symbol);
         Option option = optionManager.findOption(position.getSymbol());
-        double price = optionPricing.price(stock, quote, option);
-        return updateNavOnSymbol(position, price);
+        double priceChanged = optionPricing.price(stock, newPrice, option);
+        return updateNavOnSymbol(position, priceChanged);
     }
 
     /**
@@ -170,7 +160,7 @@ public class PositionService {
 
     public Portfolio getPortfolioDetail() {
         List<Position> positions = Lists.newArrayList(this.holdings.values());
-        double sumOfNav = getSumOfNav(positions);
+        double sumOfNav = calculatePositionNav(positions);
         //
         positions.sort(Comparator.comparing(Position::getSymbol));
         //

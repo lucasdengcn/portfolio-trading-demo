@@ -3,8 +3,7 @@
 package com.example.demo.borker;
 
 import com.example.demo.broker.DataBroker;
-import com.example.demo.messaging.model.Quote;
-import com.example.demo.messaging.model.QuoteBatch;
+import com.example.demo.model.Ticker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,16 +24,24 @@ class DataBrokerTests {
     }
 
     @Test
-    void test_on_empty_queue() {
+    void test_on_empty_queue_return_zero() {
         int result = broker.dispatchMessage();
         Assertions.assertEquals(0, result);
     }
 
     @Test
+    void test_publish_ticker_successfully() {
+        //
+        Ticker quote = Ticker.builder().symbol("A").price(1.0f).build();
+        boolean result = broker.publish(quote);
+        Assertions.assertTrue(result);
+    }
+
+    @Test
     void test_on_non_empty_queue() {
         //
-        Quote quote = Quote.newBuilder().setSymbol("A").setPrice(1.0f).build();
-        broker.publish(QuoteBatch.newBuilder().addItems(quote).build());
+        Ticker quote = Ticker.builder().symbol("A").price(1.0f).build();
+        broker.publish(quote);
         //
         int result = broker.dispatchMessage();
         Assertions.assertEquals(1, result);
@@ -43,8 +50,8 @@ class DataBrokerTests {
     @Test
     void test_on_stock_price_queue() {
         //
-        Quote quote = Quote.newBuilder().setSymbol("AAPL").setPrice(1.0f).build();
-        broker.publish(QuoteBatch.newBuilder().addItems(quote).build());
+        Ticker quote = Ticker.builder().symbol("AAPL").price(1.0f).build();
+        broker.publish(quote);
         //
         int result = broker.dispatchMessage();
         Assertions.assertEquals(1, result);
@@ -52,11 +59,13 @@ class DataBrokerTests {
 
     @Test
     void test_publish_null_message() {
-        broker.publish(null);
+        boolean published = broker.publish(null);
+        Assertions.assertFalse(published);
     }
 
     @Test
     void test_publish_empty_message() {
-        broker.publish(QuoteBatch.newBuilder().build());
+        boolean published = broker.publish(Ticker.builder().build());
+        Assertions.assertFalse(published);
     }
 }

@@ -4,7 +4,6 @@ package com.example.demo.portfolio.service;
 
 import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.stock.StockPool;
-import com.example.demo.messaging.model.Quote;
 import com.example.demo.model.Option;
 import com.example.demo.model.Position;
 import com.example.demo.model.Stock;
@@ -74,10 +73,10 @@ class PositionServiceTests {
     void update_nav_on_stock_price_change() {
         save_positions();
         //
-        Quote quote = Quote.newBuilder().setPrice(100.0f).setSymbol("A").build();
-        positionService.updateOnPriceChange(quote);
+        String symbol = "A";
+        positionService.updateNavOnPriceChange(symbol, 100.0f);
         //
-        Position position = positionService.findBySymbol("A");
+        Position position = positionService.findBySymbol(symbol);
         Assertions.assertEquals(1, position.getQty());
         Assertions.assertEquals(100.0f, position.getNav());
         Assertions.assertEquals(100.0f, position.getPrice());
@@ -87,7 +86,7 @@ class PositionServiceTests {
     void test_sum_of_nav() {
         Position position = Position.builder().nav(1.0f).build();
         List<Position> positionList = Lists.newArrayList(position, position, position);
-        double sumOfNav = positionService.getSumOfNav(positionList);
+        double sumOfNav = positionService.calculatePositionNav(positionList);
         Assertions.assertEquals(3.0f, sumOfNav);
     }
 }

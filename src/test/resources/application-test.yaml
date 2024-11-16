@@ -1,5 +1,15 @@
-market:
-  quote-producer-thread.enabled: false
-  broker-dispatch-thread:
-    enabled: false
-    timeout: 1
+app:
+  data:
+    csv:
+      portfolio: csv/sample-portfolio.csv
+      stock: csv/sample-stock.csv
+      option: csv/sample-options.csv
+  broker:
+    dispatcher:
+      enabled: false
+      timeout: 1
+  ticker:
+    producer:
+      enabled: false
+  market:
+    risk-free-interest-rate: 2

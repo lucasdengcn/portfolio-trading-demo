@@ -1,11 +1,10 @@
 /* lucas, yamingdeng@outlook.com (C) 2024 */ 
 
-package com.example.demo.market;
+package com.example.demo.market.ticker;
 
 import com.example.demo.broker.DataBroker;
-import com.example.demo.market.ticker.TickerProducer;
+import com.example.demo.model.Ticker;
 import com.google.common.collect.Sets;
-import com.google.protobuf.ByteString;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,41 +25,41 @@ class TickerProducerTests {
     @Test
     void test_on_publish_new_price() {
         tickerProducer.publishNewPrice("A", 1.0f);
-        ByteString byteString = dataBroker.peek();
-        Assertions.assertNotNull(byteString);
+        Ticker ticker = dataBroker.peek();
+        Assertions.assertNotNull(ticker);
     }
 
     @Test
     void test_on_publish_new_price_and_consume() {
         tickerProducer.publishNewPrice("A", 12.0f);
-        ByteString byteString = dataBroker.peek();
-        Assertions.assertNotNull(byteString);
+        Ticker ticker = dataBroker.peek();
+        Assertions.assertNotNull(ticker);
         //
         dataBroker.dispatchMessage();
         //
-        byteString = dataBroker.peek();
+        ticker = dataBroker.peek();
         //
-        Assertions.assertNull(byteString);
+        Assertions.assertNull(ticker);
     }
 
     @Test
     void test_generate_price_on_symbols() {
         Set<String> symbols = Sets.newHashSet("AAPL");
-        tickerProducer.generatePublishPrice(symbols, 1000);
+        tickerProducer.publishNewPricesInTime(symbols, 1000);
         //
-        ByteString byteString = dataBroker.peek();
-        Assertions.assertNotNull(byteString);
+        Ticker ticker = dataBroker.peek();
+        Assertions.assertNotNull(ticker);
         //
         dataBroker.dispatchMessage();
         //
-        byteString = dataBroker.peek();
+        ticker = dataBroker.peek();
         //
-        Assertions.assertNull(byteString);
+        Assertions.assertNull(ticker);
     }
 
     @Test
     void test_generate_price_on_empty_symbols() {
         Set<String> symbols = Sets.newHashSet();
-        tickerProducer.generatePublishPrice(symbols, 1000);
+        tickerProducer.publishNewPricesInTime(symbols, 1000);
     }
 }

@@ -3,18 +3,22 @@
 package com.example.demo.portfolio.entity;
 
 import com.example.demo.model.SymbolType;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ *
+ * Position Entity
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "positions")
+@Table(name = "POSITIONS")
 public class PositionEntity {
 
     @Id

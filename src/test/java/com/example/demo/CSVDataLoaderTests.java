@@ -5,6 +5,7 @@ package com.example.demo;
 import com.example.demo.loader.CSVDataLoader;
 import com.example.demo.market.option.OptionManager;
 import com.example.demo.market.stock.StockPool;
+import com.example.demo.portfolio.repository.PositionRepository;
 import com.example.demo.portfolio.service.PositionService;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,8 +33,13 @@ class CSVDataLoaderTests {
     @Autowired
     private PositionService positionService;
 
+    @Autowired
+    private PositionRepository positionRepository;
+
     @BeforeEach
-    void setup() {}
+    void setup() {
+        positionRepository.deleteAll();
+    }
 
     @Test
     void check_csv_file() throws IOException {

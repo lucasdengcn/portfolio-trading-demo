@@ -18,10 +18,12 @@ public class OptionManager {
 
     @Getter
     private final OptionPool optionPool = new OptionPool();
-    //
+    /**
+     * manage option pricing strategy
+     */
     private final Map<SymbolType, OptionPricing> optionPricingMap = Maps.newHashMap();
 
-    public OptionManager(@Value("${market.risk-free-interest-rate}") double r) {
+    public OptionManager(@Value("${app.market.risk-free-interest-rate}") double r) {
         optionPricingMap.put(SymbolType.CALL, new CallOptionPricing(r));
         optionPricingMap.put(SymbolType.PUT, new PutOptionPricing(r));
     }

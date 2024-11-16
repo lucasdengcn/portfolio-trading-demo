@@ -3,7 +3,7 @@
 package com.example.demo.market.entity;
 
 import com.example.demo.model.SymbolType;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "options")
+@Table(name = "OPTIONS")
 public class OptionEntity {
 
     @Id

@@ -2,10 +2,13 @@
 
 package com.example.demo.broker;
 
-import com.google.protobuf.ByteString;
+import com.example.demo.model.Ticker;
 import org.springframework.lang.NonNull;
 
 public interface TickerConsumer {
-
-    void onEvent(@NonNull ByteString byteString);
+    /**
+     *
+     * @param ticker
+     */
+    void onEvent(@NonNull Ticker ticker);
 }

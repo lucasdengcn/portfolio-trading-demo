@@ -3,7 +3,6 @@
 package com.example.demo.pricing.option;
 
 import com.example.demo.math.Norm;
-import com.example.demo.messaging.model.Quote;
 import com.example.demo.model.Option;
 import com.example.demo.model.Stock;
 import org.springframework.lang.NonNull;
@@ -17,9 +16,8 @@ public class CallOptionPricing implements OptionPricing {
     }
 
     @Override
-    public double price(@NonNull Stock stock, @NonNull Quote stockQuote, @NonNull Option option) {
+    public double price(@NonNull Stock stock, @NonNull double stockPrice, @NonNull Option option) {
         //
-        double stockPrice = stockQuote.getPrice();
         double strikePrice = option.getStrikePrice();
         double r = this.riskFreeInterestRate;
         int maturity = option.getMaturity();

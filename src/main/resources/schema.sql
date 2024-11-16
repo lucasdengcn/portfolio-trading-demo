@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS STOCKS (
+CREATE TABLE IF NOT EXISTS stocks (
     id SERIAL PRIMARY KEY,
     symbol VARCHAR(255) NOT NULL,
     latest_price DOUBLE NOT NULL DEFAULT 0,
@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS STOCKS (
     update_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS uk_stocks_symbol on STOCKS(symbol);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_stocks_symbol on stocks(symbol);
 
-CREATE TABLE IF NOT EXISTS OPTIONS (
+CREATE TABLE IF NOT EXISTS options (
     id SERIAL PRIMARY KEY,
     symbol VARCHAR(255) NOT NULL,
     latest_price DOUBLE NOT NULL DEFAULT 0,
@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS OPTIONS (
     update_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS uk_options_symbol on OPTIONS(symbol);
-CREATE INDEX IF NOT EXISTS idx_options_rel_stock_symbol on OPTIONS(rel_stock_symbol);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_options_symbol on options(symbol);
+CREATE INDEX IF NOT EXISTS idx_options_rel_stock_symbol on options(rel_stock_symbol);
 
-CREATE TABLE IF NOT EXISTS POSITIONS (
+CREATE TABLE IF NOT EXISTS positions (
     id SERIAL PRIMARY KEY,
     symbol VARCHAR(255) NOT NULL,
     position_size INT NOT NULL,
@@ -35,5 +35,5 @@ CREATE TABLE IF NOT EXISTS POSITIONS (
     update_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS uk_positions_symbol on POSITIONS(symbol);
-CREATE INDEX IF NOT EXISTS idx_positions_rel_stock_symbol on POSITIONS(rel_stock_symbol);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_positions_symbol on positions(symbol);
+CREATE INDEX IF NOT EXISTS idx_positions_rel_stock_symbol on positions(rel_stock_symbol);

@@ -8,7 +8,7 @@ public enum SymbolType {
     CALL(2),
     PUT(3);
 
-    private int value;
+    private final int value;
 
     SymbolType(int value) {
         this.value = value;

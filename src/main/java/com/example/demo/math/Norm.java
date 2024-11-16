@@ -27,13 +27,16 @@ public class Norm {
         return (1 + erf(x / Math.sqrt(2))) / 2;
     }
 
-    public static double deviation(double[] values) {
-        double mean = mean(values);
+    public static double deviation(double[] items) {
+        if (null == items || items.length == 0) {
+            return 0.0f;
+        }
+        double mean = mean(items);
         double sum = 0;
-        for (double value : values) {
+        for (double value : items) {
             sum += Math.pow(value - mean, 2);
         }
-        return Math.sqrt(sum / values.length);
+        return Math.sqrt(sum / items.length);
     }
 
     public static double mean(double[] values) {

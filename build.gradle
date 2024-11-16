@@ -1,10 +1,9 @@
 plugins {
 	id 'java'
 	id 'jacoco'
-	id 'org.springframework.boot' version '2.7.18'
-	id 'io.spring.dependency-management' version '1.1.6'
-	id 'com.google.protobuf' version '0.9.4'
-	id 'com.diffplug.spotless' version '6.13.0'
+	// id 'com.google.protobuf' version '0.9.4'
+	alias(libs.plugins.spotless)
+	alias(libs.plugins.spring.boot)
 }
 
 group = 'com.example'
@@ -12,7 +11,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(8)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -27,25 +26,23 @@ repositories {
 }
 
 dependencies {
+	implementation(platform(libs.spring.boot.dependencies))
+	implementation libs.spring.boot.starter.data.jpa
 	//
+	implementation 'org.apache.commons:commons-lang3:3.17.0'
+	implementation 'io.micrometer:micrometer-core:1.13.7'
 	// blaze pool
 	implementation 'com.github.chrisvest:stormpot:4.0'
-	implementation 'io.micrometer:micrometer-core:1.13.7'
 	implementation 'com.conversantmedia:disruptor:1.2.16'
 	//
-	implementation 'com.google.protobuf:protobuf-java:4.28.3'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'com.google.guava:guava:33.3.1-jre'
-	runtimeOnly 'com.h2database:h2'
+	// implementation 'com.google.protobuf:protobuf-java:4.28.3'
+	implementation libs.guava
+	runtimeOnly libs.h2
 	//
-	compileOnly 'org.projectlombok:lombok:1.18.34'
-	annotationProcessor 'org.projectlombok:lombok:1.18.34'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	compileOnly libs.lombok
+	annotationProcessor libs.bundles.annotation.processor
 	//
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testCompileOnly 'org.projectlombok:lombok:1.18.34'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+	testImplementation libs.bundles.testing
 }
 
 tasks.named('test') {
@@ -56,12 +53,12 @@ tasks.named('build') {
 	dependsOn spotlessApply
 }
 
-protobuf {
-	protoc {
-		// Download from repositories
-		artifact = 'com.google.protobuf:protoc:4.28.3'
-	}
-}
+//protobuf {
+//	protoc {
+//		// Download from repositories
+//		artifact = 'com.google.protobuf:protoc:4.28.3'
+//	}
+//}
 
 spotless {
 	format 'misc', {

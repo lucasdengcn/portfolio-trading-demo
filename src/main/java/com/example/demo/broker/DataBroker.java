@@ -2,13 +2,14 @@
 
 package com.example.demo.broker;
 
-import com.example.demo.messaging.model.QuoteBatch;
-import com.google.protobuf.ByteString;
+import com.example.demo.market.ticker.TickerObjectPool;
+import com.example.demo.model.Ticker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import stormpot.Pooled;
 
 /**
  * simulate event-driven broker
@@ -26,16 +28,30 @@ public class DataBroker implements InitializingBean, DisposableBean {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     //
     private volatile boolean running = false;
-    // to simulate broker's message in specific format
-    private final LinkedBlockingQueue<ByteString> messages = new LinkedBlockingQueue<>();
-    // registration done on startup
+    /**
+     *
+     */
+    private final LinkedBlockingQueue<Ticker> messages = new LinkedBlockingQueue<>();
+    /**
+     *
+     */
     private final List<TickerConsumer> consumerList = new ArrayList<>();
-    //
-    @Value("${market.broker-dispatch-thread.enabled:false}")
+    /**
+     *
+     */
+    @Value("${app.broker.dispatcher.enabled:false}")
     private boolean enabled;
-
-    @Value("${market.broker-dispatch-thread.timeout:10}")
+    /**
+     *
+     */
+    @Value("${app.broker.dispatcher.timeout:10}")
     private int waitTimeout;
+
+    private final TickerObjectPool tickerObjectPool;
+
+    public DataBroker() {
+        this.tickerObjectPool = new TickerObjectPool(100_000);
+    }
 
     private void start() {
         running = true;
@@ -57,26 +73,27 @@ public class DataBroker implements InitializingBean, DisposableBean {
     }
 
     /**
-     * for testing
+     *
+     * dispatch message to consumer.
      *
      * @return
      */
     public int dispatchMessage() {
         try {
             // wait until having income messages
-            ByteString byteString = messages.poll(waitTimeout, TimeUnit.SECONDS);
-            if (null != byteString) {
+            Ticker pooled = messages.poll(waitTimeout, TimeUnit.SECONDS);
+            if (null != pooled) {
                 List<Boolean> list = consumerList.stream()
                         .parallel()
                         .map(consumer -> {
-                            consumer.onEvent(byteString);
+                            consumer.onEvent(pooled);
                             return true;
                         })
                         .collect(Collectors.toList());
-                logger.info("QuoteDispatcher dispatch message to {} consumers. ", list.size());
+                logger.info("Ticker Dispatcher dispatch message to {} consumers. ", list.size());
                 return 1;
             } else {
-                logger.info("QuoteBroker has 0 message to dispatch. ");
+                logger.info("DataBroker has 0 message to dispatch. ");
                 return 0;
             }
         } catch (Exception e) {
@@ -87,14 +104,19 @@ public class DataBroker implements InitializingBean, DisposableBean {
 
     /**
      * put message in a queue, and then will notify consumer immediately
-     * @param quoteBatch
      */
-    public void publish(@NonNull QuoteBatch quoteBatch) {
-        if (null == quoteBatch) return;
-        if (quoteBatch.getItemsList().isEmpty()) {
-            return;
+    public boolean publish(Ticker newTick) {
+        if (null == newTick || StringUtils.isEmpty(newTick.getSymbol())) {
+            return false;
         }
-        messages.add(quoteBatch.toByteString());
+        try (Pooled<Ticker> pooled = tickerObjectPool.borrowObject()) {
+            Ticker ticker = pooled.object;
+            ticker.setSymbol(newTick.getSymbol());
+            ticker.setPrice(newTick.getPrice());
+            ticker.setVolume(newTick.getVolume());
+            //
+            return this.messages.add(ticker);
+        }
     }
 
     /**
@@ -109,20 +131,20 @@ public class DataBroker implements InitializingBean, DisposableBean {
      * for testing
      * @return
      */
-    public ByteString peek() {
+    public Ticker peek() {
         return messages.peek();
     }
 
     @Override
     public void destroy() throws Exception {
         running = false;
-        logger.info("QuoteBroker Stopping");
+        logger.info("DataBroker Stopping");
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         if (enabled) {
-            logger.info("QuoteBroker running");
+            logger.info("DataBroker running");
             start();
         }
     }

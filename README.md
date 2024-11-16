@@ -4,8 +4,8 @@ This is a demo application.
 
 ## Tech Stack
 
-- JDK 1.8
-- Spring Boot 2.7
+- JDK 21
+- Spring Boot 3.3.4
 - H2 2.1.214
 - Gradle
 - Protobuf 4.28.3
@@ -30,7 +30,7 @@ This is a demo application.
 ### Database Schema
 
 ```
-src/main/java/resources/data.sql
+src/main/java/resources/schema.sql
 ```
 
 ### Protobuf Schema
@@ -147,4 +147,12 @@ please ensure JAVA_HOME point to JDK 1.8.
 - Protobuf is good for messaging between systems given the super faster serialization and deserialization.
 - Pure POJO is good for Object Pooling to avoid NEW Object every time. would be nice for parsing input and output data.
 - ensure Object from Object Pool is immutable outside of pool.
+
+## Upgrading from Java8
+
+- rename javax.persistence to jakarta.persistence
+
+## H2
+
+https://h2database.com/html/features.html#compatibility
 
